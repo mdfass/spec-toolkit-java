@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+        <service name="refund_management">
+            <summary>Refund Management</summary>
+            <command name="create">
+                <summary>Create a refund</summary>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="refund">
+                        <summary>Refund</summary>
+                        <type>magento.postsales.refund</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="report_history">
+                <summary>Report the history of the specified refund</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="credit_note_number">
+                        <summary>Credit note number of the desired refund</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="release">
+                <summary>Release the specified refund</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="sales_channel_id">
+                        <summary>The sales channel for the order</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="order_id">
+                        <summary>Order identifier</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="credit_note_number">
+                        <summary>Credit note number of the desired refund</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User who requested the release of the desired refund</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="offline">
+                        <summary>If the refund has been released offline. By default, it is false.</summary>
+                        <type>boolean</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="cancel">
+                <summary>Cancel the specified refund</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="sales_channel_id">
+                        <summary>The sales channel for the order</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="order_id">
+                        <summary>Order identifier</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="credit_note_number">
+                        <summary>Credit note number of the desired refund</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User who requested to cancel the desired refund</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="updated">
+                <summary>Notification of a refund updated</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="refund">
+                        <summary>New Refund</summary>
+                        <type>magento.postsales.refund</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <command name="update_custom_attributes">
+                <summary>Update custom attributes of the specified refund</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="refund_custom_attributes_modification">
+                        <summary>Custom attributes modification</summary>
+                        <type>magento.postsales.refund_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="reported">
+                <summary>Notification of a refund reported</summary>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="refund">
+                        <summary>New Refund</summary>
+                        <type>magento.postsales.refund</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="custom_attributes_updated">
+                <summary>Notification of a refund reported</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="refund_custom_attributes_modification">
+                        <summary>Custom attributes modification</summary>
+                        <type>magento.postsales.refund_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <struct name="refund_custom_attributes_modification">
+            <summary>Represents a custom attributes modification</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>The sales channel for the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Order identifier</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="credit_note_number">
+                    <summary>Credit note number</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund">
+            <summary>Represents a refund of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="client">
+                    <summary>Client name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="store_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="sales_channel_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="credit_note_number">
+                    <summary>Credit note number</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="credit_note_date">
+                    <summary>Credit note date</summary>
+                    <type>date</type>
+                    <required>false</required>
+                </property>
+                <property name="status">
+                    <summary>Status of the refund</summary>
+                    <type>magento.postsales.refund_status</type>
+                    <required>true</required>
+                </property>
+                <property name="refund_type">
+                    <summary>Type (return/appeasement/cancellation)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the associated return (if applicable)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="user">
+                    <summary>User that initiated the refund request</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="refund_reason">
+                    <summary>Reason for the refund</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of order lines in the refund</summary>
+                    <type>array[magento.postsales.refund_lines]</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes of the refund</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_status">
+            <summary>Status of the refund</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="code">
+                    <summary>Status Code of the refund</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="name">
+                    <summary>Status Name of the refund</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason_code">
+                    <summary>Reason code of the refund</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason_name">
+                    <summary>Reason name of the refund</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="date">
+                    <summary>Creation date of the refund</summary>
+                    <type>date</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_lines">
+            <summary>The order lines related to the refund</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_line">
+                    <summary>Reference to the order line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_item_id">
+                    <summary>Details of item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason">
+                    <summary>Refund reason</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Refund reason description</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="payments">
+                    <summary>Payments</summary>
+                    <type>array[magento.postsales.refund_payments]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_payments">
+            <summary>Payment</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="ref">
+                    <summary>Reference</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="details">
+                    <summary>Payment details</summary>
+                    <type>magento.postsales.refund_payment_details</type>
+                    <required>true</required>
+                </property>
+                <property name="status">
+                    <summary>Payments</summary>
+                    <type>magento.postsales.refund_payment_status</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_payment_details">
+            <summary>Payment details</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="cost_gross">
+                    <summary>Cost Gross</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="cost_net">
+                    <summary>Cost Net</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="cost_vat">
+                    <summary>Cost Vat</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="vat_rate">
+                    <summary>Vat Rate</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="vat_detail">
+                    <summary>Vat detail</summary>
+                    <type>array[magento.postsales.refund_payment_vat_detail]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_payment_vat_detail">
+            <summary>Payment VAT detail</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="type">
+                    <summary>Vat type</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="amount">
+                    <summary>Vat amount</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rate">
+                    <summary>Vat rate</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="refund_payment_status">
+            <summary>Payment status</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="code">
+                    <summary>Status code</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="name">
+                    <summary>Status name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

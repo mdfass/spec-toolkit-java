@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.common">
+        <struct name="log_entry">
+            <summary>Log entry</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="type">
+                    <summary>Log type</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="category">
+                    <summary>Log category</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="level">
+                    <summary>Log level</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="message">
+                    <summary>Log message</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="context">
+                    <summary>Log context</summary>
+                    <type>map[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <service name="log_entry_management">
+            <summary>Log entry Management</summary>
+            <command name="publish">
+                <summary>Publish a log entry</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="log_entry">
+                        <summary>Log entry</summary>
+                        <type>magento.common.log_entry</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+        </service>
+    </module>
+
+</specification>

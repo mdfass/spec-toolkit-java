@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 
 public class ProcessorTest {
   @Test
-  public void testit() throws Exception {
+  public void runProcessor() throws Exception {
 
-    new Processor().doit();
+    new Processor().process();
   }
 
 }

@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,8 +36,13 @@ import javax.lang.model.element.Modifier;
 
 public class Processor {
 
-  public void doit() throws DocumentException, IOException {
-    Files.walk(Paths.get(".")).filter(f -> f.toString().endsWith(".xml")).forEach(f -> process(f));
+  public static void main(String[] args) throws IOException {
+    new Processor().process();
+  }
+
+  public void process() throws IOException {
+    Files.walk(Paths.get("src/main/resources/shared-services-internal"))
+        .filter(f -> f.toString().endsWith(".xml")).forEach(f -> process(f));
 
     System.out.println(types);
     System.out.println(aggregateTypes);
@@ -55,22 +60,21 @@ public class Processor {
 
   private Document parse(Path p) throws DocumentException {
     SAXReader reader = new SAXReader();
-    Document document = reader.read(p.toString());
+    Document document = reader.read(p.toFile());
     return document;
   }
 
 
-  private String readModules(Element rootElement) throws DocumentException {
+  private void readModules(Element rootElement) throws DocumentException {
     for (Iterator<Element> it = rootElement.elementIterator("module"); it.hasNext();) {
       Element moduleElement = it.next();
       readStructs(moduleElement);
       readEnums(moduleElement);
     }
-    return "";
   }
 
 
-  private String readStructs(Element moduleElement) throws DocumentException {
+  private void readStructs(Element moduleElement) throws DocumentException {
     String moduleName = "com." + moduleElement.attribute("name").getValue();
     for (Iterator<Element> it = moduleElement.elementIterator("struct"); it.hasNext();) {
       Element structElement = it.next();
@@ -81,7 +85,6 @@ public class Processor {
       List<StructProperty> properties = readProperties(structElement.element("properties"));
       generateBean(moduleName, structName, summary, description, extensible, properties);
     }
-    return "";
   }
 
 
@@ -126,6 +129,9 @@ public class Processor {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       fieldSpecs.add(FieldSpec
           .builder(fromString(property.type), propertyName, Modifier.PUBLIC, Modifier.FINAL)
+          .addAnnotation(AnnotationSpec.builder(JsonProperty.class)
+              .addMember("value", "$S", property.originalPropertyName)
+              .addMember("required", "$L", property.required).build())
           .addJavadoc(getJavadoc(property.summary, property.description)).build());
     }
 
@@ -158,7 +164,7 @@ public class Processor {
     System.out.println(
         String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
     try {
-      javaFile.writeTo(Paths.get("src/test/java"));
+      javaFile.writeTo(Paths.get("src/generated/java"));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -176,10 +182,7 @@ public class Processor {
     }
     FieldSpec valueSpec = FieldSpec.builder(String.class, "value", Modifier.PRIVATE)
         .addAnnotation(JsonValue.class).build();
-    /*
-     * // either add @JsonValue here (if you don't need getter) private final String value; private
-     * BooleanField(String value) { this.value = value; }
-     */
+
     MethodSpec constructorSpec = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
         .addParameter(String.class, "value", Modifier.FINAL).addCode("this.value = value;\n")
         .build();
@@ -191,7 +194,7 @@ public class Processor {
     System.out.println(
         String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
     try {
-      javaFile.writeTo(Paths.get("src/test/java"));
+      javaFile.writeTo(Paths.get("src/generated/java"));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -263,7 +266,7 @@ public class Processor {
       case "date":
         return LocalDate.class;
       case "datetime":
-        return LocalDateTime.class;
+        return ZonedDateTime.class;
       case "boolean":
         return Boolean.class;
       case "string":

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.common">
+        <struct name="price">
+            <summary>Pricing information of the line</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="net_amount">
+                    <summary>Net amount of the line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="gross_amount">
+                    <summary>Gross amount of the line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="tax_amount">
+                    <summary>Total tax amount of the line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="tax_rate">
+                    <summary>Total tax rate</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="taxes">
+                    <summary>Detailed list of taxes applied to the line</summary>
+                    <type>array[magento.common.price_tax]</type>
+                    <required>true</required>
+                </property>
+                <property name="currency">
+                    <summary>Currency of the amount of the line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="price_tax">
+            <summary>Taxes</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="type">
+                    <summary>Type of the tax</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="amount">
+                    <summary>Amount of tax</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="rate">
+                    <summary>Tax rate applied</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

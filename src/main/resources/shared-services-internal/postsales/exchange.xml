@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="exchange_management">
+            <summary>Exchange Management</summary>
+
+            <command name="create">
+                <summary>Create an exchange</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="exchange">
+                        <summary>Exchange</summary>
+                        <type>magento.postsales.exchange</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+        </service>
+
+        <struct name="exchange">
+            <summary>Represents an exchange</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Store ID of original order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>ID of original order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="new_order_id">
+                    <summary>New ID for the exchange</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="new_shipping_method">
+                    <summary>New shipping method</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="new_shipping_address">
+                    <summary>New shipping address</summary>
+                    <type>magento.postsales.shipping_address</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>Exchange lines</summary>
+                    <type>array[magento.postsales.exchange_line]</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User that initiated the exchanges</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="exchange_line">
+            <summary>Represents an exchange line</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>Identifier of the line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="line_number">
+                    <summary>Order line number</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="new_sku">
+                    <summary>New SKU</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

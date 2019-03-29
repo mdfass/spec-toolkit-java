@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+
+        <service name="shipment_management">
+            <summary>Shipment Management</summary>
+
+            <event name="shipped">
+                <summary>Notification about some of the order lines being shipped</summary>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="shipment">
+                        <summary>Shipment</summary>
+                        <type>magento.logistics.shipment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <struct name="shipment">
+            <summary>Represents a shipment of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="store_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>ID of the source where the order is sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="method">
+                    <summary>Method that identify the type of shipment that has been done</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>List of items in the shipment</summary>
+                    <type>array[magento.logistics.shipment_item]</type>
+                    <required>true</required>
+                </property>
+                <property name="packages">
+                    <summary>List of packages in the shipment</summary>
+                    <type>array[magento.logistics.shipment_package]</type>
+                    <required>true</required>
+                </property>
+                <property name="address">
+                    <summary>Address where the items will be shipped</summary>
+                    <type>magento.common.address</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="shipment_item">
+            <summary>An item in a shipments</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_line_id">
+                    <summary>Reference to the order line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="shipment_package">
+            <summary>A package in shipments</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>ID of the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="carrier">
+                    <summary>Carrier who will deliver the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="tracking_number">
+                    <summary>Tracking number of the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="tracking_link">
+                    <summary>Tracking link of the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="tracking_comment">
+                    <summary>Tracking comment of the package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Items in the package</summary>
+                    <type>array[magento.logistics.shipment_package_item]</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes of package</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="shipment_package_item">
+            <summary>Items within a package</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_line_id">
+                    <summary>Id of the order line of the item within the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+
+</specification>

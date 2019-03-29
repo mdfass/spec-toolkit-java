@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="product_return_management">
+            <summary>Product Return Management</summary>
+
+            <command name="create">
+                <summary>Create a product return</summary>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="product_return">
+                        <summary>Product Return</summary>
+                        <type>magento.postsales.product_return_create</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="request">
+                <summary>Request a product return</summary>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="product_return_request">
+                        <summary>Product Return Request</summary>
+                        <type>magento.postsales.product_return_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="updated">
+                <summary>Notification from which occurs on a product return update</summary>
+                <description>Notification from order management which occurs when a product return has been updated</description>
+                <extensible>true</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="product_return">
+                        <summary>Product Return</summary>
+                        <type>magento.postsales.product_return_update</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <struct name="product_return_create">
+            <summary>Represents a product return of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="store_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>ID of the source where the order is sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="items">
+                    <summary>List of items in the shipment</summary>
+                    <type>array[magento.postsales.product_return_items]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_update">
+            <summary>Represents a product return of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="store_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>ID of the source where the order is sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA number of the product return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="status">
+                    <summary>RMA status of the product return</summary>
+                    <type>magento.postsales.status</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>List of items in the shipment</summary>
+                    <type>array[magento.postsales.product_return_items]</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_request">
+            <summary>Represents a product return request of one or several item</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>ID of the source where the order is sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the product return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>List of items in the product return request</summary>
+                    <type>array[magento.postsales.product_return_request_item]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_items">
+            <summary>An item in a product return</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_line">
+                    <summary>Reference to the order line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="item_details">
+                    <summary>Details of item</summary>
+                    <type>magento.postsales.product_return_item_details</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_request_item">
+            <summary>An item in a product return request</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="order_line">
+                    <summary>Reference to the order line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="item_details">
+                    <summary>Details of item</summary>
+                    <type>magento.postsales.product_return_request_item_details</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_item_details">
+            <summary>Details of product return items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="condition">
+                    <summary>Condition of the item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="product_return_request_item_details">
+            <summary>Details of product return request items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="sku">
+                    <summary>SKU of the item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="client_sku">
+                    <summary>Client SKU of the item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="option_name">
+                    <summary>Name of the selected option</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

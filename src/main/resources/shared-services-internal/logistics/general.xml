@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+
+        <struct name="package">
+            <summary>A package in shipments</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>ID of the package</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="details">
+                    <summary>Some physical details of the package</summary>
+                    <type>magento.logistics.package_detail</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>References to order_line_numbers which were packed in the package</summary>
+                    <type>array[integer]</type>
+                    <required>true</required>
+                </property>
+                <property name="aggregated_items">
+                    <summary>Reference to aggregated items shipped</summary>
+                    <type>array[magento.logistics.aggregated_item]</type>
+                    <required>false</required>
+                </property>
+                <property name="carrier">
+                    <summary>Carrier who will deliver the package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="tracking_number">
+                    <summary>Tracking number of the package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="tracking_link">
+                    <summary>Tracking link of the package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="tracking_comment">
+                    <summary>Tracking comment of the package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="shipping_label_link">
+                    <summary>Link to be use to print the shipping label</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes of package</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="package_detail">
+            <summary>Details of package</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="name">
+                    <summary>Package name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="weight">
+                    <summary>Total weight of products within the package</summary>
+                    <type>float</type>
+                    <required>false</required>
+                </property>
+                <property name="weight_unit">
+                    <summary>Unit to be used for weight (kg, gr, pounds...)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="length">
+                    <summary>Length of the package</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="width">
+                    <summary>Width of the package</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="height">
+                    <summary>Height of the package</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="dimensions_unit">
+                    <summary>Unit to be used for box dimensions (cm, inches...)</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="item">
+            <summary>Item details</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="order_line_id">
+                    <summary>ID of the order line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_line_number">
+                    <summary>Order line Number</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="item_type">
+                    <summary>Item type (physical, service, shipping)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="sku">
+                    <summary>Item sku</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="name">
+                    <summary>Item name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_details">
+                    <summary>Custom details with relevant item information</summary>
+                    <description>
+                        Note that this custom details cannot be updated with lines_change_status messages
+                    </description>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="image_url">
+                    <summary>Item image URL</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="product_url">
+                    <summary>Product page URL</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="order_line_price">
+                    <summary>Line price information</summary>
+                    <type>magento.common.price</type>
+                    <required>false</required>
+                </property>
+                <property name="order_line_promotions_info">
+                    <summary>Line promotion information</summary>
+                    <type>magento.logistics.order_line_promotion_information</type>
+                    <required>false</required>
+                </property>
+                <property name="parent_order_line_number">
+                    <summary>For services like giftwrap or engraving to relate to another line</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="status">
+                    <summary>Status for the specified line</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="status_reason">
+                    <summary>Current status reason</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="status_date">
+                    <summary>Date of the status change</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="aggregated_item">
+            <summary>Aggregated quantity</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="aggregated_line_id">
+                    <summary>ID of aggregated items</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="sku">
+                    <summary>Product sku</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity of aggregated items</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="order_lines">
+                    <summary>Reference to the order lines from requested shipment</summary>
+                    <type>array[integer]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="customer_shipment">
+            <summary>Represents a shipment of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="shipment_id">
+                    <summary>Reference to the shipment [*deprecated*]</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="shipment_request_id">
+                    <summary>Reference to the shipment request</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="store_id">
+                    <summary>Store from the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>ID of the source where the order is sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="method">
+                    <summary>Shipping method</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="shipment_date">
+                    <summary>Date of the shipment</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>List of items</summary>
+                    <type>array[magento.logistics.item]</type>
+                    <required>true</required>
+                </property>
+                <property name="packages">
+                    <summary>List of packages in the shipment</summary>
+                    <type>array[magento.logistics.package]</type>
+                    <required>true</required>
+                </property>
+                <property name="address">
+                    <summary>Address where the items will be shipped</summary>
+                    <type>magento.common.address</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="order_line_promotion_information">
+            <summary>Information about the promotion at order line level</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="original_price">
+                    <summary>Original price of the line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="promotions">
+                    <summary>Promotions applied to the line</summary>
+                    <type>array[magento.logistics.order_line_promotion]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="order_line_promotion">
+            <summary>Promotion applied to the order</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="code">
+                    <summary>Code of the promotion</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="name">
+                    <summary>Name of the promotion</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="discount">
+                    <summary>Quantity of the promotion discount</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="percentage">
+                    <summary>Percentage of the promotion discount</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

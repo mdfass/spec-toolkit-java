@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.sales">
+        <service name="saleschannel_management">
+            <summary>Sales Channel Management</summary>
+            <command name="create">
+                <summary>Create a new Sales Channel</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel">
+                        <summary>SalesChannel</summary>
+                        <type>magento.sales.sales_channel</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+            <command name="delete">
+                <summary>Delete Sales Channel</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel_id">
+                        <summary>SalesChannel ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+            <command name="update">
+                <summary>Update a Sales Channel</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel">
+                        <summary>SalesChannel</summary>
+                        <type>magento.sales.sales_channel</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="created">
+                <summary>Sales channel created</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel">
+                        <summary>An created sales channel structure</summary>
+                        <type>magento.sales.sales_channel</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="updated">
+                <summary>Sales channel updated</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel">
+                        <summary>An updated sales channel structure</summary>
+                        <type>magento.sales.sales_channel</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="deleted">
+                <summary>Sales channel deleted</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sales_channel">
+                        <summary>An deleted sales channel structure</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+        </service>
+
+        <service name="saleschannel_repository">
+            <summary>Sales Channel Repository</summary>
+            <query name="find">
+                <summary>Query to fetch sales channel info</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="sales_channel_id">
+                        <summary>Sales Channel Identifier</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.sales.sales_channel</returns>
+            </query>
+        </service>
+
+        <struct name="sales_channel">
+            <summary>Sales Channel</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>The identifier of the sales channel</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="name">
+                    <summary>Sales channel name.</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="aggregate_id">
+                    <summary>ID of the aggregate</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

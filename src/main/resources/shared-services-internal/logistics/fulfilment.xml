@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+        <service name="fulfillment_management">
+            <summary>Fulfillment Management</summary>
+
+            <event name="customer_shipment_done">
+                <summary>Notification about some of the order lines being shipped</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="shipment">
+                        <summary>Shipment</summary>
+                        <type>magento.logistics.customer_shipment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="reported">
+                <summary>Notification about a shipment suitable for reporting purposes</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="shipment">
+                        <summary>Shipment</summary>
+                        <type>magento.logistics.customer_shipment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="line_price_adjusted">
+                <summary>Notification about a price change</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="order_line_id">
+                        <summary>Order Line ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="order_line_number">
+                        <summary>Order line Number</summary>
+                        <type>integer</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="item_type">
+                        <summary>Type of the item product</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="sku">
+                        <summary>The SKU of the item to update its price</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="name">
+                        <summary>The name of the item to update its price</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="custom_details">
+                        <summary>Custom details with relevant item information</summary>
+                        <type>array[magento.common.custom_attribute]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="image_url">
+                        <summary>URL of the image associated to the product</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="product_url">
+                        <summary>URL of the product</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="order_line_price">
+                        <summary>Line price information</summary>
+                        <type>magento.common.price</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="parent_order_line_number">
+                        <summary>To relate to the parent line number</summary>
+                        <type>integer</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="status">
+                        <summary>Status of the order</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="status_reason">
+                        <summary>Status reason of the order</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="status_date">
+                        <summary>When the status changed for the order</summary>
+                        <type>datetime</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <command name="confirm_packing">
+                <summary>Confirm packing</summary>
+                <description>
+                    Ship from store confirm packing throw carrier integration
+                </description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="pick_list_uuid">
+                        <summary>Pick List</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="pick_list_line_number">
+                        <summary>Pick list line number</summary>
+                        <type>integer</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="box_number">
+                        <summary>Box number</summary>
+                        <type>integer</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="package_details">
+                        <summary>Some physical details of the package</summary>
+                        <type>magento.logistics.package_detail</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="adjust_line_price">
+                <summary>Adjust line price</summary>
+                <description>
+                    Action to be able to change price during picking
+                </description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="adjustment">
+                        <summary>Adjustment</summary>
+                        <type>magento.logistics.adjustment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="configure_packages">
+                <summary>Configure packages</summary>
+                <description>
+                    Action to define the boxes to be used for an order within a pick list
+                </description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="pick_list_id">
+                        <summary>Pick List ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="shipment_request_id">
+                        <summary>Shipment request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="packages">
+                        <summary>List of packages</summary>
+                        <type>array[magento.logistics.package]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+        </service>
+
+        <struct name="adjustment">
+            <summary>Adjust line price</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Sales Channel Id</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Order Id</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User who needs to change the line price</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_line_number">
+                    <summary>Order line Number</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="gross_amount">
+                    <summary>Gross amount of the order line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+
+</specification>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.service_bus">
+
+        <service name="remote">
+            <summary>Remote Management</summary>
+            <description>Provides API for service registration, discovery and enpoint stats</description>
+
+            <command name="register">
+                <summary>Register a service</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="id">
+                        <summary>Unique Identifier</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="url">
+                        <summary>Service URL</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="secret">
+                        <summary>Secret used to sign requests</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="contracts">
+                        <summary>Implemented Service Contracts</summary>
+                        <type>array[string]</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="subscribes">
+                        <summary>List of events the service is subscribed to</summary>
+                        <type>array[string]</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="labels">
+                        <summary>Additional labels</summary>
+                        <type>map[string]</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.service_bus.remote_endpoint</returns>
+            </command>
+
+            <command name="unregister">
+                <summary>Unregister a service</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="id">
+                        <summary>Unique Identifier</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <query name="discover">
+                <summary>Fetch list of registered services</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments />
+                <returns>magento.service_bus.discovery_list</returns>
+            </query>
+
+            <query name="stats">
+                <summary>Fetch stats per registered application</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="start_date">
+                        <summary>Start date for stats aggregation in UTC (e.g. 2017-08-15T15:52:01+00:00)</summary>
+                        <type>datetime</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="end_date">
+                        <summary>End date for stats aggregation in UTC (e.g. 2017-08-15T15:52:01+00:00)</summary>
+                        <type>datetime</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.service_bus.stats_list</returns>
+            </query>
+
+            <command name="control">
+                <summary>Control interface</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="endpoints">
+                        <summary>Endpoint control definition</summary>
+                        <type>array[magento.service_bus.endpoint_control]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>array[magento.service_bus.endpoint_control]</returns>
+            </command>
+        </service>
+
+        <struct name="remote_endpoint">
+            <summary>An endpoint</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>Unique identifier</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="peer_url">
+                    <summary>Endpoint Peer-to-Peer URL</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="remote_url">
+                    <summary>URL for synchronous requests</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="delegate_url">
+                    <summary>URL for asynchronous requests</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="contracts">
+                    <summary>Implemented Service Contracts</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="subscribes">
+                    <summary>List of events the service is subscribed to</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="labels">
+                    <summary>Additional labels</summary>
+                    <type>map[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="discovery_list">
+            <summary>Discovery list</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="endpoints">
+                    <summary>Registered Endpoints</summary>
+                    <type>array[magento.service_bus.remote_endpoint]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="stats_list">
+            <summary>Stats list</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="stats">
+                    <summary>Application stats list</summary>
+                    <type>array[magento.service_bus.app_metrics]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="app_metrics">
+            <summary>Application and its associated metrics</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="application">
+                    <summary>Name of the application</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="metrics">
+                    <summary>Associated metrics</summary>
+                    <type>array[magento.service_bus.metric]</type>
+                    <required>true</required>
+                </property>
+                <property name="methods">
+                    <summary>Per method stats breakdown</summary>
+                    <type>array[magento.service_bus.method_metrics]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="method_metrics">
+            <summary>Specific method and its associated metrics</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="method">
+                    <summary>Name of the method</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="metrics">
+                    <summary>Associated metrics</summary>
+                    <type>array[magento.service_bus.metric]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="metric">
+            <summary>Metric and its value</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="name">
+                    <summary>Name of the metric</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="value">
+                    <summary>Value of the metric</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="endpoint_control">
+            <summary>Endpoint control payload</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="id">
+                    <summary>Endpoint id</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="enabled">
+                    <summary>Endpoint status enabled/disabled</summary>
+                    <description>A flag to enable or disable a given endpoint</description>
+                    <type>boolean</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

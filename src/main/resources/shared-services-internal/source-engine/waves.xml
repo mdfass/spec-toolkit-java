@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+    <module name="magento.source_engine">
+        <service name="sourcing_wave_management">
+            <summary>Sourcing Request Wave Management</summary>
+
+            <event name="started">
+                <summary>New wave has started</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="wave">
+                        <summary>Wave details</summary>
+                        <type>magento.source_engine.wave</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="completed">
+                <summary>Existing wave has completed execution. </summary>
+                <description>All sourcing requests within this wave now have a status or error.</description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="wave">
+                        <summary>Wave details</summary>
+                        <type>magento.source_engine.wave</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <command name="start">
+                <summary>Immediately starts a new wave execution</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="wave_execution_request">
+                        <summary>Configure how this wave should be executed</summary>
+                        <type>magento.source_engine.wave_execution_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+        </service>
+        
+        <struct name="wave">
+            <summary>Entity representing wave</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>id of the wave</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="start_time">
+                    <summary>Date and time the sourcing requests of this wave started executing</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="end_time">
+                    <summary>Date and time the sourcing requests of this wave completed executing</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="sourcing_request_ids">
+                    <summary>A list of all the sourcing request ids contained within this wave</summary>
+                    <type>array[string]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="wave_execution_request">
+            <summary>Configure how this wave should be executed</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="execution_time">
+                    <summary>overrides the time the wave appears to be executing</summary>
+                    <description>
+                        This allows for overriding the time the wave appears to be occurring for SRCRR.
+                        That is, it doesn't change or schedule the wave to be ran at a different time,
+                        instead srcrr uses this time when determining which sources are active (regardless of the actual time)
+
+                        If not provided, the current time is used.
+                    </description>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="enable_all_sources">
+                    <summary>Enables all sources</summary>
+                    <description>Overrides config from config-api and enables all sources (less blacklisted ones)</description>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+                <property name="included_source_ids">
+                    <summary>Source ids that should be included regardless of their configuration</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="excluded_source_ids">
+                    <summary>Source ids to exclude</summary>
+                    <description>source ids that should be excluded (this takes priority over all other configuration)</description>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+</specification>

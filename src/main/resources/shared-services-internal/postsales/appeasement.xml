@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+        <struct name="appeasement">
+            <summary>Represents a appeasement of one or several items</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="credit_note_number">
+                    <summary>Credit note number.</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="credit_note_date">
+                    <summary>Credit note date</summary>
+                    <description>Expected format example: 2016-05-20T09:09:09+00:00</description>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="origin_date">
+                    <summary>Date in which the appeasement was requested</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of order lines in the appeasement</summary>
+                    <type>array[magento.postsales.appeasement_line]</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes of the appeasement</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="appeasement_line">
+            <summary>The lines related to the appeasement</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>External identifier of the line in the order. It may not be unique</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="line_number">
+                    <summary>Unique identifier of the line in the order</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="amount">
+                    <summary>The amount of the appeasement line</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="reason">
+                    <summary>The reason code of the appeasement line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>The reason description of the appeasement line</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes of the appeasement line</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+
+</specification>

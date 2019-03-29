@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+
+        <service name="shipment_repository">
+            <summary>Shipment Repository</summary>
+
+            <query name="search">
+                <summary>Searchs shipments by criteria</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.logistics.shipment_collection</returns>
+                <searchable_fields>
+                    <field name="sales_channel_id">
+                        <summary>Sales channel ID</summary>
+                        <description>Uniquely identifies a sales channel</description>
+                        <type>string</type>
+                    </field>
+                    <field name="order_id">
+                        <summary>Order external ID</summary>
+                        <description>Uniquely identifies a single order. Usually provided by the front end</description>
+                        <type>string</type>
+                    </field>
+                    <field name="source_id">
+                        <summary>Source external ID</summary>
+                        <description>Uniquely identifies a single source</description>
+                        <type>string</type>
+                    </field>
+                    <field name="shipment_request_id">
+                        <summary>Shipment request external ID</summary>
+                        <description>Uniquely identifies a shipment request</description>
+                        <type>string</type>
+                    </field>
+                    <field name="carrier">
+                        <summary>Carrier</summary>
+                        <type>string</type>
+                    </field>
+                    <field name="method">
+                        <summary>Shipment Method</summary>
+                        <description>Shipment method used (e.g. STANDARD, EXPRESS, ISPU, etc)</description>
+                        <type>string</type>
+                    </field>
+                    <field name="status">
+                        <summary>Shipment status</summary>
+                        <description>Current status of the shipment</description>
+                        <type>string</type>
+                    </field>
+                    <field name="shipment_status_date">
+                        <summary>Shipment status date</summary>
+                        <description>Date when the status was updated</description>
+                        <type>string</type>
+                    </field>
+                    <field name="shipment_request_date">
+                        <summary>Shipment request date</summary>
+                        <description>Date when the shipment_request was generated</description>
+                        <type>string</type>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="shipment_collection">
+            <summary>Shipment Collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching shipments</summary>
+                    <type>array[magento.logistics.shipment]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+</specification>

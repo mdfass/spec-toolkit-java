@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.inventory">
+        <service name="source_management">
+            <summary>Source Management</summary>
+
+            <command name="create">
+                <summary>Create Source</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source">
+                        <summary>Source</summary>
+                        <type>magento.inventory.source</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="update">
+                <summary>Update source</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source">
+                        <summary>Source</summary>
+                        <type>magento.inventory.source</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="synchronize">
+                <summary>Request synchronization of sources</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                </arguments>
+            </command>
+
+            <event name="created">
+                <summary>Stock source created</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source">
+                        <summary>An created source structure</summary>
+                        <type>magento.inventory.source</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="updated">
+                <summary>Stock source updated</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source">
+                        <summary>An updated source structure</summary>
+                        <type>magento.inventory.source</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="deleted">
+                <summary>Stock source deleted</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>An deleted source structure</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <service name="source_repository">
+            <summary>Source Repository</summary>
+            <query name="find">
+                <summary>Fetch source by ID</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>Source Unique Identifier</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.source</returns>
+            </query>
+            <query name="search">
+                <summary>Find sources by criteria.</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.source_collection</returns>
+                <searchable_fields>
+                    <field name="id">
+                        <summary>Source Id</summary>
+                    </field>
+                    <field name="name">
+                        <summary>Source name</summary>
+                    </field>
+                    <field name="contact_first_name">
+                        <summary>Contact first name</summary>
+                    </field>
+                    <field name="contact_last_name">
+                        <summary>Contact last name</summary>
+                    </field>
+                    <field name="contact_email">
+                        <summary>Contact email address</summary>
+                    </field>
+                    <field name="contact_phone">
+                        <summary>Contact phonenumber</summary>
+                    </field>
+                    <field name="contact_address_first_line">
+                        <summary>Contact address first line</summary>
+                    </field>
+                    <field name="contact_country">
+                        <summary>Contact address country</summary>
+                    </field>
+                    <field name="contact_zip">
+                        <summary>Contact address ZIP code</summary>
+                    </field>
+                    <field name="contact_state">
+                        <summary>Contact address state</summary>
+                    </field>
+                    <field name="aggregate_id">
+                        <summary>Aggregate Id</summary>
+                        <description>Use to find stock aggregates associated with the source</description>
+                    </field>
+                    <field name="attribute_key">
+                        <summary>Custom attribute key</summary>
+                    </field>
+                    <field name="attribute_value">
+                        <summary>Custom attribute value</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="source">
+            <summary>Source</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>Unique identifier for the source node</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="name">
+                    <summary>Human friendly name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="type">
+                    <summary>Types for this source</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="timezone">
+                    <summary>Timezone</summary>
+                    <description>Timezone where source operates (eq. "UTC", "America/New_York" or "Europe/Madrid")</description>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="configurations">
+                    <summary>Configurations of the source</summary>
+                    <type>magento.inventory.source_configurations</type>
+                    <required>false</required>
+                </property>
+                <property name="address">
+                    <summary>Address of the source</summary>
+                    <type>magento.common.address</type>
+                    <required>true</required>
+                </property>
+                <property name="aggregate_ids">
+                    <summary>List of Stock Aggregate ids associated to the source</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_configurations">
+            <summary>Source Configuration</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="active">
+                    <summary>If the source is active or not</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+                <property name="capabilities">
+                    <summary>Capabilities the source offers</summary>
+                    <type>magento.inventory.source_capabilities</type>
+                    <required>false</required>
+                </property>
+                <property name="integration_name">
+                    <summary>Integration name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="ship_from_store">
+                    <summary>Enable SFS capability for this source</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_capabilities">
+            <summary>Capabilities of a source</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="shipping">
+                    <summary>List of shipping method skus</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="services">
+                    <summary>List of services skus</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="accepts_returns">
+                    <summary>Whether a source accepts returns or not</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+                <property name="fulfillment">
+                    <summary>Fulfillment capabilities</summary>
+                    <type>magento.inventory.source_fulfillment</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_fulfillment">
+            <summary>Fulfillment capabilities</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="can_ship_to_source">
+                    <summary>Can fulfill and ship orders to another source</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_collection">
+            <summary>Source Collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching sources</summary>
+                    <type>array[magento.inventory.source]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

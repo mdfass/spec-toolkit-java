@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.common">
+        <struct name="query">
+            <summary>Search Query</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Offset</summary>
+                    <description>Number of first record to return</description>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Number of records to return</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="criteria">
+                    <summary>Search criteria</summary>
+                    <type>magento.common.expression</type>
+                    <required>false</required>
+                </property>
+                <property name="include">
+                    <summary>Specify list of extension attributes to be included into records</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+                <property name="order">
+                    <summary>Sort order</summary>
+                    <type>map[magento.common.order_direction]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="expression">
+            <summary>Search Criteria</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="exp">
+                    <summary>Type of the expression</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="args">
+                    <summary>Arguments</summary>
+                    <type>array[magento.common.expression]</type>
+                    <required>false</required>
+                </property>
+                <property name="value">
+                    <summary>Constant value expression</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="type">
+                    <summary>Type of the constant value</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <enum name="order_direction">
+            <value>ASC</value>
+            <value>DESC</value>
+        </enum>
+    </module>
+
+</specification>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.common">
+        <struct name="address">
+            <summary>Physical address information</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="reference">
+                    <summary>Reference of the address</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="address_type">
+                    <summary>Type of the address</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="first_name">
+                    <summary>First Name of the source</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="last_name">
+                    <summary>Last Name of the source</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="address1">
+                    <summary>First line of address description</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="address2">
+                    <summary>Second line of address description</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="city">
+                    <summary>City of the address</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="state">
+                    <summary>State of the address</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="zip">
+                    <summary>Zip code of the address</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="country_code">
+                    <summary>Country code of the address</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="phone">
+                    <summary>Phone of the source</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="email">
+                    <summary>Email of the source</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="latitude">
+                    <summary>Latitude coordinates</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="longitude">
+                    <summary>Longitude coordinates</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+
+</specification>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.inventory">
+
+        <service name="source_restriction">
+            <summary>Source Restrictions by SKU</summary>
+
+            <command name="update">
+                <summary>Update source restrictions by SKU</summary>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="restriction">
+                        <summary>Restriction</summary>
+                        <type>magento.inventory.restriction</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <query name="find">
+                <summary>Fetch source restrictions by SKU</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="sku">
+                        <summary>SKU</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.restriction</returns>
+            </query>
+        </service>
+
+        <struct name="restriction">
+            <summary>Source Restriction by SKU</summary>
+            <description>The Sources restricted to SKU for sourcing</description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>The sku of the product</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="only_in_source">
+                    <summary>Array of sources IDs to restrict the sourcing for the sku</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

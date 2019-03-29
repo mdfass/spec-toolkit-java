@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+    <module name="magento.source_engine">
+        <service name="allocation_queue_repository">
+            <summary>Allocation Queue Repository</summary>
+            <query name="search">
+                <summary>Search allocation queue entries using a search query.</summary>
+                <description>Searchable fields: order external id</description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.source_engine.allocation_queue_entry_collection</returns>
+                <searchable_fields>
+                    <field name="order_id">
+                        <summary>Order Id</summary>
+                    </field>
+                    <field name="status">
+                        <summary>Allocation queue entry status</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <service name="allocation_queue_management">
+            <summary>Allocation Queue Management</summary>
+
+            <command name="add_order">
+                <summary>Add order to allocation queue to be sourced</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="order_id">
+                        <summary>Order Id</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="store_id">
+                        <summary>Store Id</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+        </service>
+
+        <struct name="allocation_queue_entry_collection">
+            <summary>Allocation Queue Entry Collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching allocation queue entries</summary>
+                    <type>array[magento.source_engine.allocation_queue_entry]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="allocation_queue_entry">
+            <summary>Allocation Queue Entry</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="order_id">
+                    <summary>Order ID</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="status">
+                    <summary>Status of the entry in the allocation queue</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="created_by">
+                    <summary>Who created the entry</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="created_at">
+                    <summary>When the entry was created</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="modified_by">
+                    <summary>Who modified the entry last</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="modified_at">
+                    <summary>When the entry was modified last</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+  <module name="magento.sales">
+
+    <service name="order_management">
+      <summary>Order Management</summary>
+
+      <query name="get_notifications">
+        <summary>Fetch notifications for particular order</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order_id">
+            <summary>Order Identifier</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+        <returns>array[magento.sales.order_notification]</returns>
+      </query>
+
+      <command name="create">
+        <summary>Create a new order</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order">
+            <summary>Order</summary>
+            <type>magento.sales.order</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </command>
+
+    <command name="create_comment">
+        <summary>Create a new order comment</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+            <argument name="order_comment">
+                <summary>Comment</summary>
+                <type>magento.sales.order_comment</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+    </command>
+
+    <query name="get_comments">
+        <summary>Fetch comments for particular order</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+            <argument name="order_id">
+                <summary>Order Identifier</summary>
+                <type>string</type>
+                <required>true</required>
+            </argument>
+            <argument name="sales_channel_id">
+                <summary>Sales channel identifier</summary>
+                <type>string</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+        <returns>array[magento.sales.order_comment]</returns>
+    </query>
+
+      <command name="cancel">
+        <summary>Cancel an order</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order_id">
+            <summary>Order identifier</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+          <argument name="sales_channel_id">
+            <summary>The sales channel for the order</summary>
+            <type>string</type>
+            <required>false</required>
+          </argument>
+          <argument name="user">
+            <summary>User who cancelled the order</summary>
+            <type>string</type>
+            <required>false</required>
+          </argument>
+        </arguments>
+        <returns>magento.sales.order</returns>
+      </command>
+
+    <command name="cancel_line">
+        <summary>Cancel an order line</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+            <argument name="order_id">
+                <summary>Order identifier</summary>
+                <type>string</type>
+                <required>true</required>
+            </argument>
+            <argument name="sales_channel_id">
+                <summary>The sales channel for the order</summary>
+                <type>string</type>
+                <required>true</required>
+            </argument>
+            <argument name="line_number">
+                <summary>Line number to cancel</summary>
+                <type>integer</type>
+                <required>true</required>
+            </argument>
+            <argument name="reason">
+                <summary>Reason for order line cancellation</summary>
+                <type>string</type>
+                <required>true</required>
+            </argument>
+            <argument name="user">
+                <summary>User who cancelled the order line</summary>
+                <type>string</type>
+                <required>false</required>
+            </argument>
+        </arguments>
+    </command>
+
+      <command name="resend_notification">
+        <summary>Resend notification</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="notification_id">
+            <summary>Notification Identifier</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+          <argument name="recipient">
+            <summary>Override recipient, optionally</summary>
+            <type>string</type>
+            <required>false</required>
+          </argument>
+          <argument name="user">
+            <summary>User who initiated operation</summary>
+            <type>string</type>
+            <required>false</required>
+          </argument>
+        </arguments>
+        <returns>magento.sales.order_notification</returns>
+      </command>
+
+      <command name="report_history">
+        <summary>Report the history of the specified order</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="sales_channel_id">
+            <summary>The sales channel for the order</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+          <argument name="order_id">
+            <summary>Order identifier</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+          <argument name="current_status">
+            <summary>Define if OMS should report current status of the order</summary>
+            <type>boolean</type>
+            <required>false</required>
+          </argument>
+        </arguments>
+      </command>
+
+      <command name="update_shipping_address">
+        <summary>Update the shipping address information of the specified order</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+        <arguments>
+          <argument name="shipping_address_modification">
+            <summary>The shipping address information for an order modification</summary>
+            <type>magento.sales.shipping_address_modification</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </command>
+
+      <command name="update_shipping_line">
+          <summary>Update the shipping line for an order</summary>
+          <extensible>false</extensible>
+          <status>draft</status>
+          <arguments>
+              <argument name="shipping_line_modification">
+                  <summary>Shipping line modification</summary>
+                  <type>magento.sales.shipping_line_modification</type>
+                  <required>true</required>
+              </argument>
+          </arguments>
+      </command>
+
+    <command name="create_shipping_line">
+        <summary>Create a shipping line for an order</summary>
+        <extensible>false</extensible>
+        <status>draft</status>
+        <arguments>
+            <argument name="shipping_line_creation">
+                <summary>Shipping line creation</summary>
+                <type>magento.sales.shipping_line_creation</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+    </command>
+
+       <command name="clone_shipping_address">
+           <summary>Clone the shipping address from another shipping item</summary>
+           <extensible>false</extensible>
+           <status>draft</status>
+           <arguments>
+               <argument name="shipping_address_clonation">
+                   <summary>Shipping address clonation</summary>
+                   <type>magento.sales.shipping_address_clonation</type>
+                   <required>true</required>
+               </argument>
+           </arguments>
+       </command>
+
+      <command name="update_custom_attributes">
+        <summary>Update custom attributes of the specified order</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+          <arguments>
+              <argument name="custom_attributes_modification">
+                  <summary>Custom attributes modification</summary>
+                  <type>magento.sales.custom_attributes_modification</type>
+                  <required>true</required>
+              </argument>
+          </arguments>
+      </command>
+
+      <command name="update_line_custom_attributes">
+        <summary>Update line custom attributes of the specified order line</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+          <arguments>
+              <argument name="line_custom_attributes_modification">
+                  <summary>Line custom attributes modification</summary>
+                  <type>magento.sales.line_custom_attributes_modification</type>
+                  <required>true</required>
+              </argument>
+          </arguments>
+      </command>
+
+      <command name="substitute_sku">
+        <summary>Substitute a sku by another in a specific order</summary>
+        <description>WARNING: this command will replace SKU on existing orders. It must be used under extreme precaution for this specific purpose.</description>
+        <extensible>false</extensible>
+        <status>draft</status>
+        <arguments>
+            <argument name="sku_substitution">
+                <summary>Sku substitution information.</summary>
+                <type>magento.sales.sku_substitution</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+      </command>
+
+      <event name="created">
+        <summary>Order created event</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order">
+            <summary>Order</summary>
+            <type>magento.sales.order</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </event>
+
+      <event name="updated">
+        <summary>Notification about order update</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order">
+            <summary>Order</summary>
+            <type>magento.sales.order</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </event>
+
+      <event name="line_cancelled">
+        <summary>Notification about an order line being cancelled</summary>
+        <extensible>false</extensible>
+        <status>public</status>
+        <arguments>
+          <argument name="order_id">
+            <summary>Order ID</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+          <argument name="order_line_id">
+            <summary>Order Line ID</summary>
+            <type>string</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </event>
+
+      <event name="reported">
+        <summary>Notification about an order suitable for reporting purposes</summary>
+        <extensible>false</extensible>
+        <status>deprecated</status>
+        <arguments>
+          <argument name="order">
+            <summary>Order</summary>
+            <type>magento.sales.order</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </event>
+
+     <event name="custom_attributes_updated">
+        <summary>Custom attributes has been updated</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+        <arguments>
+            <argument name="custom_attributes_modification">
+                <summary>Custom attributes modification</summary>
+                <type>magento.sales.custom_attributes_modification</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+    </event>
+
+    <event name="line_custom_attributes_updated">
+        <summary>Line custom attributes has been updated</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+        <arguments>
+            <argument name="line_custom_attributes_modification">
+                <summary>Line custom attributes modification</summary>
+                <type>magento.sales.line_custom_attributes_modification</type>
+                <required>true</required>
+            </argument>
+        </arguments>
+    </event>
+
+      <event name="shipping_address_updated">
+        <summary>Notification about the shipping address of an order has been updated</summary>
+        <extensible>false</extensible>
+        <status>beta</status>
+        <arguments>
+          <argument name="shipping_address_modification">
+            <summary>The shipping address information for an order modified</summary>
+            <type>magento.sales.shipping_address_modification</type>
+            <required>true</required>
+          </argument>
+        </arguments>
+      </event>
+
+    </service>
+
+      <struct name="shipping_line_modification">
+          <summary>Custom attributes modification</summary>
+          <extensible>true</extensible>
+          <properties>
+              <property name="sales_channel_id">
+                  <summary>The sales channel for the order</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="order_id">
+                  <summary>Order identifier</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="user">
+                  <summary>User</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="line_numbers">
+                  <summary>Line numbers to modify</summary>
+                  <type>array[integer]</type>
+                  <required>true</required>
+              </property>
+              <property name="new_shipping_line">
+                  <summary>New shipping line number</summary>
+                  <type>integer</type>
+                  <required>true</required>
+              </property>
+          </properties>
+      </struct>
+
+      <struct name="shipping_line_creation">
+          <summary>Shipping Line Creation</summary>
+          <extensible>true</extensible>
+          <properties>
+              <property name="sales_channel_id">
+                  <summary>The sales channel for the order</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="order_id">
+                  <summary>Order identifier</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="user">
+                  <summary>User</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="line_numbers">
+                  <summary>Line numbers to modify</summary>
+                  <type>array[integer]</type>
+                  <required>true</required>
+              </property>
+              <property name="shipping_method">
+                  <summary>Shipping Method SKU</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="shipping_address">
+                  <summary>New shipping address</summary>
+                  <type>magento.sales.shipping_address</type>
+                  <required>true</required>
+              </property>
+          </properties>
+      </struct>
+
+      <struct name="shipping_address_clonation">
+          <summary>Clonation of a shipping address</summary>
+          <extensible>true</extensible>
+          <properties>
+              <property name="sales_channel_id">
+                  <summary>The sales channel for the order</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="order_id">
+                  <summary>Order identifier</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="user">
+                  <summary>User</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="shipping_line_to">
+                  <summary>Shipping line number to modify address</summary>
+                  <type>integer</type>
+                  <required>true</required>
+              </property>
+              <property name="shipping_line_from">
+                  <summary>Shipping line number to get the address</summary>
+                  <type>integer</type>
+                  <required>true</required>
+              </property>
+          </properties>
+      </struct>
+
+      <struct name="custom_attributes_modification">
+          <summary>Custom attributes modification</summary>
+          <extensible>true</extensible>
+          <properties>
+              <property name="sales_channel_id">
+                  <summary>The sales channel for the order</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="order_id">
+                  <summary>Order identifier</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="user">
+                  <summary>User</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="custom_attributes">
+                  <summary>Custom Attributes</summary>
+                  <type>array[magento.common.custom_attribute]</type>
+                  <required>true</required>
+              </property>
+          </properties>
+      </struct>
+
+      <struct name="line_custom_attributes_modification">
+          <summary>Line custom attributes modification</summary>
+          <extensible>true</extensible>
+          <properties>
+              <property name="sales_channel_id">
+                  <summary>The sales channel for the order</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="order_id">
+                  <summary>Order identifier</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="user">
+                  <summary>User</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="line_id">
+                  <summary>Order Line ID</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="line_number">
+                  <summary>Order Line Number</summary>
+                  <type>string</type>
+                  <required>true</required>
+              </property>
+              <property name="custom_attributes">
+                  <summary>Custom Attributes</summary>
+                  <type>array[magento.common.custom_attribute]</type>
+                  <required>true</required>
+              </property>
+          </properties>
+      </struct>
+
+    <struct name="shipping_address_modification">
+      <summary>Shipping address information for an order modification action</summary>
+      <description>Container of data needed to perform a shipping address update for an order</description>
+      <extensible>false</extensible>
+      <properties>
+        <property name="sales_channel_id">
+          <summary>Reference to the Store where the order was placed</summary>
+          <type>string</type>
+          <required>true</required>
+        </property>
+        <property name="order_id">
+          <summary>Reference to the Order to modify</summary>
+          <type>string</type>
+          <required>true</required>
+        </property>
+        <property name="line_number">
+          <summary>Reference to the order line to modify</summary>
+          <type>string</type>
+          <required>true</required>
+        </property>
+        <property name="user">
+          <summary>User who initiated the order modification</summary>
+          <type>string</type>
+          <required>true</required>
+        </property>
+        <property name="force">
+          <summary>Force creation skipping validations</summary>
+          <type>boolean</type>
+          <required>false</required>
+        </property>
+        <property name="new_shipping_address">
+          <summary>New shipping address</summary>
+          <type>magento.sales.shipping_address</type>
+          <required>true</required>
+        </property>
+      </properties>
+    </struct>
+
+    <struct name="sku_substitution">
+      <summary>Sku substitution information</summary>
+      <description>Container of data needed to perform a sku substitution for an order</description>
+      <extensible>false</extensible>
+      <properties>
+          <property name="order_id">
+              <summary>Reference to the order to modify</summary>
+              <description>This field is optional. If not provided, the SKU will be substituted on every order of the given sales channel if provided, or on every order.</description>
+              <type>string</type>
+              <required>false</required>
+          </property>
+          <property name="sales_channel_id">
+              <summary>Reference to the sales channel where the order was placed</summary>
+              <description>If an order id is provided, the sales channel must be provided as well. If not, the sales channel is optional.</description>
+              <type>string</type>
+              <required>false</required>
+          </property>
+          <property name="current_sku">
+              <summary>Current sku to be substituted</summary>
+              <type>string</type>
+              <required>true</required>
+          </property>
+          <property name="new_sku">
+              <summary>New sku to substitute</summary>
+              <type>string</type>
+              <required>true</required>
+          </property>
+      </properties>
+     </struct>
+
+  </module>
+</specification>

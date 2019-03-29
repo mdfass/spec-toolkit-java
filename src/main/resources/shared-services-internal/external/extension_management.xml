@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+    <module name="magento.external">
+        <service name="extension_management">
+            <summary>Extension management</summary>
+            <command name="execute">
+                <summary>Execute one extension</summary>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="execution_id">
+                        <summary>The identifier of the execution</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="extension_name">
+                        <summary>Name of the extension</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User who executes the extension</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="params">
+                        <summary>The identifier of the execution</summary>
+                        <type>map[array[string]]</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="executed">
+                <summary>When an extension has been executed</summary>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="execution_id">
+                        <summary>The identifier of the execution</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="success">
+                        <summary>True if execution was success, False if it has failed.</summary>
+                        <type>boolean</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="execution_time">
+                        <summary>Time spent in seconds.</summary>
+                        <type>integer</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="output">
+                        <summary>Output of the script execution</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+
+        </service>
+    </module>
+</specification>

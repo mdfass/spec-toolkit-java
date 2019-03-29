@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.inventory">
+
+        <service name="aggregate_management">
+            <summary>Stock Aggregate Management</summary>
+
+            <event name="created">
+                <summary>Notification about any stock aggregate create</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate">
+                        <summary>Aggregate</summary>
+                        <type>magento.inventory.aggregate</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+            <event name="updated">
+                <summary>Notification about any stock aggregate update</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate">
+                        <summary>Aggregate</summary>
+                        <type>magento.inventory.aggregate</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+            <event name="deleted">
+                <summary>Notification about any stock aggregate delete</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate_id">
+                        <summary>Aggregate ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+            <command name="create">
+                <summary>Create a new Aggregate</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate">
+                        <summary>Aggregate</summary>
+                        <type>magento.inventory.aggregate</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+            <command name="delete">
+                <summary>Delete an Aggregate</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate_id">
+                        <summary>Aggregate ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+            <command name="update">
+                <summary>Update an Aggregate</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate">
+                        <summary>Aggregate</summary>
+                        <type>magento.inventory.aggregate</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+            <command name="update_safety_stock">
+                <summary>Update safety stock on aggregate</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="aggregate_safety_stock">
+                        <summary>Aggregate safety stock</summary>
+                        <type>magento.inventory.aggregate_safety_stock</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+        </service>
+
+        <service name="aggregate_repository">
+            <summary>Aggregate Repository</summary>
+            <query name="find">
+                <summary>Query to fetch aggregates and see the sources associated to the aggregates.</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="aggregate_id">
+                        <summary>Aggregate Identifier</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.aggregate</returns>
+            </query>
+        </service>
+
+        <service name="aggregate_history">
+            <summary>Stock Aggregate Management</summary>
+
+            <query name="find">
+                <summary>Query to fetch aggregate stock history</summary>
+                <extensible>false</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="sku">
+                        <summary>SKU</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="aggregate_id">
+                        <summary>Aggregate ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.aggregate_stock_history_find</returns>
+            </query>
+        </service>
+
+        <service name="aggregate_history_trace">
+            <summary>Stock Aggregate Management</summary>
+
+            <query name="find">
+                <summary>Query to fetch aggregate stock history</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sku">
+                        <summary>SKU</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="aggregate_id">
+                        <summary>Aggregate ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="date">
+                        <summary>Date</summary>
+                        <type>datetime</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.aggregate_stock_history_trace</returns>
+            </query>
+        </service>
+
+        <struct name="aggregate">
+            <summary>Stock Aggregate</summary>
+            <description>
+                Stock Aggregate represent a group of stock quantities by SKU which are aggregated by some criteria
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>Unique identifier</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="name">
+                    <summary>Human friendly name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="sources">
+                    <summary>ID of the related sources</summary>
+                    <type>array[string]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="aggregate_safety_stock">
+            <summary>Aggregate Safety Stock</summary>
+            <description>
+                Aggregate safety stock represents the number of units available that we don't want to take into
+                consideration when selling online, as an internal buffer for avoiding possible oversells.
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="aggregate_id">
+                    <summary>Aggregate unique identifier</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Number of units that we don't take into consideration for this aggregate</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="type">
+                    <summary>Safety stock type (active, outlet, end-of-life).</summary>
+                    <type>magento.inventory.safety_stock_type</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+        
+        <struct name="aggregate_stock_history_find">
+            <summary>Aggregate Stock History</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="aggregate_id">
+                    <summary>Aggregate ID</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="stock">
+                    <summary>Stock</summary>
+                    <type>array[magento.inventory.aggregate_stock_history_sku]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="aggregate_stock_history_sku">
+            <summary>Aggregate Stock History</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="event_date">
+                    <summary>Event Date</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="event_type">
+                    <summary>Event Type</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="reason">
+                    <summary>Reason</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="description">
+                    <summary>Description</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="adjustment">
+                    <summary>Adjustment</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="snapshot_quantity">
+                    <summary>Snapshot Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="source_id">
+                    <summary>Source ID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="unlimited">
+                    <summary>Unlimited</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="aggregate_stock_history_trace">
+            <summary>Aggregate Stock History Trace</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="aggregate_id">
+                    <summary>Aggregate ID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="date">
+                    <summary>Date</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="total_quantity">
+                    <summary>Total Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="safety_stock">
+                    <summary>Safety Stock</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="soft_inflight">
+                    <summary>Soft Inflight</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="final_quantity">
+                    <summary>Final Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="sources">
+                    <summary>Sources</summary>
+                    <type>array[magento.inventory.aggregate_stock_history_trace_source]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="aggregate_stock_history_trace_source">
+            <summary>Aggregate Stock History Trace Source</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="source_id">
+                    <summary>Source ID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="safety_stock">
+                    <summary>Safety Stock</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="inflight">
+                    <summary>Inflight</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="final_quantity">
+                    <summary>Final Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <enum name="safety_stock_type">
+            <value>active</value>
+            <value>outlet</value>
+            <value>end-of-life</value>
+        </enum>
+
+    </module>
+
+</specification>

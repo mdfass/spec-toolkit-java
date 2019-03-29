@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="product_return_repository">
+            <summary>Product return Repository</summary>
+            <query name="search">
+                <summary>Search product returns by criteria</summary>
+                <extensible>false</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.postsales.return_update_collection</returns>
+            </query>
+        </service>
+
+
+    </module>
+
+</specification>

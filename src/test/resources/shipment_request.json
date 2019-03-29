@@ -1,61 +1,43 @@
 {
-"id":"the_id",
-"store":"the_store",
-"origin":"the_origin",
-"origin_date":"2019-01-08T15:48:07+00:00",
-"status":"the_status",
-	"request_id": "Luma Gear-EMC_TEST_ISPU_11111-02",
-	"sales_channel": "Luma Gear",
-	"order_id": "EMC_TEST_ISPU_11111",
-	"source_id": "P_STORE_1",
-	"parent_request_id": "123456",
-	"gift_message": "this is not a gift",
-	"shipping_method": "SHIPTOSTORE",
-
-	"billing_address": {
-		"reference": "NONE",
-		"address1": "Carrer de Llacuna",
-		"address2": "Ed. A",
-		"address_type": "customer",
-		"city": "Barcelona",
-		"country_code": "es",
-		"custom_attributes": [],
-		"email": "jdoe@aol.com",
-		"first_name": "John",
-		"last_name": "Doe",
-		"phone": "0034566717823",
-		"state": "es",
-		"zip": "08005",
-		"longitude": "1.35",
-		"latitude": "-3.67"
-	},
-	"shipping_address": {
-		"reference": "NONE",
-		"address1": "Gerhard D. Wempe KG",
-		"address2": "Level 3, Abflugbereich Z",
-		"address_type": "source",
-		"city": "Frankfurt Flughafen",
-		"country_code": "Germany",
-		"custom_attributes": [{
-			"name": "a",
-			"value": "b"
-		}, {
-			"name": "c",
-			"value": "d"
-		}],
-		"email": "DL-asterix@magento.com",
-		"first_name": "a",
-		"last_name": "a",
-		"phone": "987889988",
-		"state": "Hessen",
-		"zip": "60549"
-	},
-	"created": "2019-01-08T15:48:07+00:00",
-	"custom_details": [],
-	"customer_id": "564264565",
-	"customer_reference": "none",
-	"language": "fr_FR",
-	"vat_country": "ES",
-	"request_created_at": "2019-01-08T15:48:31+00:00",
-	"items": []
+      "id": "SHIPMENT_REQUEST_ID",
+      "order_id": "ORDERID",
+      "store": "STORE",
+      "vat_country": "UK",
+      "origin": "ORIGIN",
+      "origin_date": "2018-09-18T09:25:48+00:00",
+      "status": "STATUS",
+      "items": [
+        {
+          "order_line_id": "ORDER_LINE_ID",
+          "order_line_number": 1,
+          "custom_details": [],
+          "status_date": "2018-09-18T09:25:48+00:00"
+        }
+      ],
+      "addresses": [],
+      "shipping_address": {
+        "reference": "ABC123",
+        "address_type": "customer",
+        "first_name": "Firstname",
+        "last_name": "Lastname",
+        "address1": "AddressLine 1",
+        "address2": "AddressLine 2",
+        "city": "AddressCity",
+        "country_code": "DE",
+        "email": "foo@bar.com",
+        "custom_attributes": []
+      },
+      "billing_address": {
+        "reference": "ABC123",
+        "address_type": "customer",
+        "first_name": "Firstname",
+        "last_name": "Lastname",
+        "address1": "AddressLine 1",
+        "address2": "AddressLine 2",
+        "city": "AddressCity",
+        "country_code": "DE",
+        "email": "foo@bar.com",
+        "custom_attributes": []
+      },
+      "status_date": "2018-09-18T09:25:48+00:00"
 }

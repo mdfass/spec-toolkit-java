@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.inventory">
+        <service name="source_stock_management">
+            <summary>Source Stock Management</summary>
+
+            <command name="update">
+                <summary>Update stock levels for a specific source</summary>
+                <description>
+                    There are 2 different ways to update stock via this message: sending a single message for a specific source (either DELTA, FULL or NONZERO) for intra-day updates or a daily batch of snapshots for all the sources (this last process is recommended to be run once per day).
+                    In the first case (individual source updates) the BATCH node can be omitted entirely.
+                    In the second case all messages part of batch needs to have the same process_id. The batch process will run a reindex of the OMS stock, only after all messages of the batch have been received/imported, and will generate an aggregate_stock_management.updated event after the reindex has been completed (this process might take several minutes depending on the size of the batch).
+                </description>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="snapshot">
+                        <summary>Snapshot</summary>
+                        <type>magento.inventory.source_snapshot</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="adjust">
+                <summary>Adjust stock level</summary>
+                <description>Adjust stock level relative to the quantity already available
+                    in the OMS (the stock will increment or decrement as indicated by
+                    the quantity field)
+                </description>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="adjustment">
+                        <summary>Adjustment</summary>
+                        <type>magento.inventory.source_adjustment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="updated">
+                <summary>Notification about any stock update from the source node</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="snapshot">
+                        <summary>Snapshot</summary>
+                        <type>magento.inventory.source_snapshot</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <command name="request_allocation">
+                <summary>Request the allocation of a set of items in a Source</summary>
+                <description>
+                    Allocate a set of skus in a Source.
+                    For each line in the request, if and only if there's stock for it, we will remove the soft inflight and add a hard inflight.
+                </description>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>Source ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="uuid">
+                        <summary>Request Allocation UUID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="reservation_uuid">
+                        <summary>Reservation UUID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="lines">
+                        <summary>Allocation Lines</summary>
+                        <type>array[magento.inventory.allocation_line]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="complete_allocation">
+                <summary>Complete the allocation of a set of items in a Source Stock</summary>
+                <description>
+                    Complete the allocation of a set of skus in a Source Stock.
+                </description>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>Source ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="uuid">
+                        <summary>Request Allocation UUID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="lines">
+                        <summary>Allocation Lines</summary>
+                        <type>array[magento.inventory.allocation_line]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="cancel_allocation">
+                <summary>Cancel the allocation of a set of items in a Source Stock</summary>
+                <description>
+                    Cancel the allocation of a set of skus in a Source Stock. If aggregate is present, a new reservation
+                    will be created
+                </description>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="allocation">
+                        <summary>Allocation</summary>
+                        <type>magento.inventory.allocation</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="allocation_confirmed">
+                <summary>Notification about the status of a requested allocation</summary>
+                <description>
+                    This event will notify about the existence of stock or not for each sku in a given allocation.
+                </description>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>Source ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="uuid">
+                        <summary>Request Allocation UUID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="lines">
+                        <summary>Allocation Lines</summary>
+                        <type>array[magento.inventory.allocation_line_status]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="allocation_completed">
+                <summary>Allocation Completed for a set of items in a Source Stock</summary>
+                <description>
+                    Allocation Completed for a set of skus in a Source Stock.
+                </description>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="source_id">
+                        <summary>Source ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="uuid">
+                        <summary>Request Allocation UUID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="lines">
+                        <summary>Allocation Lines</summary>
+                        <type>array[magento.inventory.allocation_line]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="adjusted">
+                <summary>Notification about stock adjustment from the source node</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="adjustment">
+                        <summary>Adjustment</summary>
+                        <type>magento.inventory.source_adjustment</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <service name="source_stock_repository">
+            <summary>Source Stock Repository</summary>
+
+            <query name="get_sources_sku_snapshot">
+                <summary>Get sources stock for SKU</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="sku">
+                        <summary>SKU</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+
+                    <argument name="sources">
+                        <summary>Sources Ids</summary>
+                        <type>array[string]</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>array[magento.inventory.source_stock]</returns>
+            </query>
+
+            <query name="get_ship_to_store_stock">
+                <summary>Get ship to store stock</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="pickup_location">
+                        <summary>Identifier that the customer selected as a collection point</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="sales_channel">
+                        <summary>Sales channel</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="skus">
+                        <summary>list of skus</summary>
+                        <type>array[string]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>array[magento.inventory.ship_to_store_stock]</returns>
+            </query>
+
+            <query name="search">
+                <summary>Find source stock by criterias.</summary>
+                <description>IMPORTANT: the maximum number of accepted criterias is 1000 (in case you are using both the sku and source as criterias, the multiplication of the sku * source parameters shouldn't exceed 1000 values)</description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.source_stock_collection</returns>
+                <searchable_fields>
+                    <field name="sales_channel_id">
+                        <summary>Sales channel Id</summary>
+                    </field>
+                    <field name="sku">
+                        <summary>SKU</summary>
+                    </field>
+                    <field name="source_id">
+                        <summary>Source Id</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+            <query name="search_availability">
+                <summary>Find source stock availability by criteria. SKU field is mandatory.</summary>
+                <description>IMPORTANT: the maximum number of accepted criterias is 1000 (in case you are using both the sku and source as criterias, the multiplication of the sku * source parameters shouldn't exceed 1000 values)</description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.source_stock_collection</returns>
+                <searchable_fields>
+                    <field name="sales_channel_id">
+                        <summary>Sales channel Id</summary>
+                    </field>
+                    <field name="sku">
+                        <summary>SKU</summary>
+                    </field>
+                    <field name="source_id">
+                        <summary>Source Id</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+
+            <query name="search_history">
+                <summary>Find source stock history by criteria.</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.inventory.source_stock_history_collection</returns>
+                <searchable_fields>
+                    <field name="source_id">
+                        <summary>Source Id</summary>
+                    </field>
+                    <field name="sku">
+                        <summary>SKU</summary>
+                    </field>
+                    <field name="modified_at">
+                        <summary>Date it was last updated</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="source_stock">
+            <summary>Source Stock</summary>
+            <description>
+                The Source Stock represent a real stock quantity by SKU in a certain source node (ie: warehouse,
+                fullfillment center etc..)
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>The sku of the product</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>The quantity units of the product available</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>The identifier of the source node which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_name">
+                    <summary>The name of the source which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="type">
+                    <summary>The type of stock (GOOD, DAMAGED, REPAIRED ...)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="unlimited">
+                    <summary>This sku has unlimited stock in this source (quantity is ignored)</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+                <property name="inflight">
+                    <summary>Quantity of the items which are in inflight (only for searching purposes)</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_quantity">
+            <summary>Source and quantity</summary>
+            <description>
+                Source and quantity
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="quantity">
+                    <summary>Quantity</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>The identifier of the source node which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_name">
+                    <summary>The name of the source which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="unlimited">
+                    <summary>This sku has unlimited stock (quantity is ignored)</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="allocation">
+            <summary>Source Stock Allocation</summary>
+            <description>
+                Source Stock allocation for given skus.
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="source_id">
+                    <summary>Source ID</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="uuid">
+                    <summary>Allocation UUID</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="lines">
+                    <summary>Allocation Lines</summary>
+                    <type>array[magento.inventory.allocation_line]</type>
+                    <required>true</required>
+                </property>
+                <property name="reason">
+                    <summary>Reason of cancellation</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reservation_uuid">
+                    <summary>Reservation UUID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="aggregate_id">
+                    <summary>Aggregate ID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+
+        <struct name="allocation_line">
+            <summary>Sku and Quantity</summary>
+            <description>
+                Quantity of items from a given Sku that will be allocated
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>The sku of the product</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity of items to allocate</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="reason">
+                    <summary>Reason of item to allocate</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="allocation_line_status">
+            <summary>Sku, Quantity and stock information</summary>
+            <description>
+                Information about the existence or not of stock for a given quantity of a given Sku
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>The sku of the product</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity of items</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="in_stock">
+                    <summary>Stock status for the given quantity of the given Sku</summary>
+                    <type>boolean</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="ship_to_store_stock">
+            <summary>Ship To Store stock</summary>
+            <description>
+                Ship to Store stock
+            </description>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="in_location">
+                    <summary>Stock of the pickup location</summary>
+                    <type>magento.inventory.source_quantity</type>
+                    <required>true</required>
+                </property>
+                <property name="can_provide">
+                    <summary>List of available stocks in other sources</summary>
+                    <type>array[magento.inventory.source_quantity]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_snapshot">
+            <summary>Source Snapshot</summary>
+            <description>
+                Snapshot represents an array of SKUs with their quantities captured at certain moment of time.
+            </description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="source_id">
+                    <summary>The identifier of the source node which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="mode">
+                    <summary>Snapshot Mode (FULL, NONZERO, DELTA)</summary>
+                    <type>magento.inventory.snapshot_mode</type>
+                    <required>true</required>
+                </property>
+                <property name="batch">
+                    <summary>Batch information</summary>
+                    <description>(only required if expecting to send multiple messages for
+                        the various sources at the same time).
+                    </description>
+                    <type>magento.inventory.source_snapshot_batch</type>
+                    <required>false</required>
+                </property>
+                <property name="created_on">
+                    <summary>Date and time when snapshot was created</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="stock">
+                    <summary>Array of SKUs in snapshot</summary>
+                    <type>array[magento.inventory.source_snapshot_sku]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+
+        <struct name="source_snapshot_batch">
+            <summary>Batch information</summary>
+            <description>Batch permits many stock-snapshot to be transfered as a single transaction</description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="process_id">
+                    <summary>Universal Unique Identifier generated by the sender</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="process_number">
+                    <summary>Unique id of the message in the current batch</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="process_total">
+                    <summary>Total number of messages in the batch</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_snapshot_sku">
+            <summary>An entry in source snapshot</summary>
+            <description>Pair of SKU and Quantity</description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="unlimited">
+                    <summary>This sku has unlimited stock (quantity is ignored)</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_adjustment">
+            <summary>Source Stock Adjustment</summary>
+            <description>
+                Adjustment payload
+            </description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="source_id">
+                    <summary>The identifier of the source node which owns the stock quantities</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason">
+                    <summary>Reason for stock adjustment</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="created_on">
+                    <summary>Date and time when adjustment was created</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="adjustments">
+                    <summary>Array of SKUs in adjustment</summary>
+                    <type>array[magento.inventory.source_adjustment_sku]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_adjustment_sku">
+            <summary>An entry in source adjustment</summary>
+            <description>Pair of SKU and Quantity</description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity that that is being adjusting by.</summary>
+                    <description>
+                        You can increase it (e.g. 5) or decrease it by adding a minus before
+                        the number (e.g. -5)
+                    </description>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_stock_history">
+            <summary>Source Stock History</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="source_id">
+                    <summary>Source ID</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="sku">
+                    <summary>SKU</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="quantity">
+                    <summary>Quantity</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="unlimited">
+                    <summary>Unlimited</summary>
+                    <type>boolean</type>
+                    <required>false</required>
+                </property>
+                <property name="stock_change">
+                    <summary>Stock Change</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="inflight">
+                    <summary>Inflight</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="event_date">
+                    <summary>Event Date</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="event_type">
+                    <summary>Event Type</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_stock_collection">
+            <summary>Source stock collection for Search result</summary>
+            <description>Array of source stock with offset, size and total items</description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>The offset of the search</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="size">
+                    <summary>The size of the searched chunk returned</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="total">
+                    <summary>Number of total items that search result has</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="items">
+                    <summary>The items found by search query</summary>
+                    <type>array[magento.inventory.source_stock]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="source_stock_history_collection">
+            <summary>Source stock history collection for Search History result</summary>
+            <description>Array of source stock history with offset, size and total items</description>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>The offset of the search</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="size">
+                    <summary>The size of the searched chunk returned</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="total">
+                    <summary>Number of total items that search result has</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="items">
+                    <summary>The items found by search query</summary>
+                    <type>array[magento.inventory.source_stock_history]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

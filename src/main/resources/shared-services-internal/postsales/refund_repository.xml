@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="refund_repository">
+            <summary>Refunds Repository</summary>
+            <query name="search">
+                <summary>Searchs refunds by criteria</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.postsales.refund_collection</returns>
+                <searchable_fields>
+                    <field name="sales_channel">
+                        <summary>Sales channel ID</summary>
+                    </field>
+                    <field name="credit_note_number">
+                        <summary>Credit note number</summary>
+                    </field>
+                    <field name="sku">
+                        <summary>SKU</summary>
+                    </field>
+                    <field name="status">
+                        <summary>Refund status</summary>
+                    </field>
+                    <field name="type">
+                        <summary>Refund type</summary>
+                    </field>
+                    <field name="order_id">
+                        <summary>Order ID</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="refund_collection">
+            <summary>Refund Collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching refunds</summary>
+                    <type>array[magento.postsales.refund]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>

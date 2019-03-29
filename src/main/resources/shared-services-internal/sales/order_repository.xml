@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+    <module name="magento.sales">
+        <service name="order_repository">
+            <summary>Order Repository</summary>
+            <query name="search">
+                <summary>Search orders using a search query.</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.sales.order_collection</returns>
+                <searchable_fields>
+                    <field name="id">
+                        <summary>Order external ID</summary>
+                        <description>Uniquely identifies a single order. Usually provided by the front end</description>
+                        <type>string</type>
+                    </field>
+                    <field name="customer_id">
+                        <summary>Customer identification</summary>
+                    </field>
+                    <field name="customer_first_name">
+                        <summary>Customer first name</summary>
+                    </field>
+                    <field name="customer_last_name">
+                        <summary>Customer last name</summary>
+                    </field>
+                    <field name="customer_email">
+                        <summary>Customer email address</summary>
+                    </field>
+                    <field name="customer_phone">
+                        <summary>Customer phonenumber</summary>
+                    </field>
+                    <field name="address_first_line">
+                        <summary>Address first line</summary>
+                    </field>
+                    <field name="address_country">
+                        <summary>Address first line</summary>
+                    </field>
+                    <field name="address_zip">
+                        <summary>Address ZIP code</summary>
+                    </field>
+                    <field name="address_state">
+                        <summary>Address state</summary>
+                    </field>
+                    <field name="history_status">
+                        <summary>Historical status. It will return all orders that have ever been in status specified. This field provides more use when used in conjunction with history_date (for example: Get all orders that were in status "LOGISTICS" between January 20th and January 21st)</summary>
+                    </field>
+                    <field name="history_date">
+                        <summary>Historical date. It should be used in conjunction with the history_status to filter orders that had a specific status during the defined timeframe.</summary>
+                    </field>
+                    <field name="status">
+                        <summary>Order status</summary>
+                    </field>
+                    <field name="status_reason">
+                        <summary>Status reason</summary>
+                    </field>
+                    <field name="origin_date">
+                        <summary>Origin date</summary>
+                    </field>
+                    <field name="origin">
+                        <summary>Order origin</summary>
+                    </field>
+                    <field name="payment_method">
+                        <summary>Payment method</summary>
+                    </field>
+                    <field name="sales_channel">
+                        <summary>Sales channel</summary>
+                    </field>
+                    <field name="sku">
+                        <summary>SKU</summary>
+                    </field>
+                    <field name="product_type">
+                        <summary>Product type</summary>
+                    </field>
+                    <field name="source_id">
+                        <summary>Source Id [*deprecated*]</summary>
+                    </field>
+                    <field name="shipping_method">
+                        <summary>Shipping method</summary>
+                    </field>
+                    <field name="source_location">
+                        <summary>Source that was used to hard allocate the order line</summary>
+                    </field>
+                    <field name="pickup_location">
+                        <summary>Identifier that the customer selected as a collection point (only used for ISPU orders)</summary>
+                    </field>
+                    <field name="attribute_key">
+                        <summary>Custom attributes</summary>
+                    </field>
+                    <field name="attribute_value">
+                        <summary>Custom attributes</summary>
+                    </field>
+                    <field name="order_item_attribute_key">
+                        <summary>Order item custom attributes</summary>
+                    </field>
+                    <field name="order_item_attribute_value">
+                        <summary>Order item custom attributes</summary>
+                    </field>
+                    <field name="order_item_status">
+                        <summary>Order item status</summary>
+                    </field>
+                    <field name="order_item_status_reason">
+                        <summary>Order item status reason</summary>
+                    </field>
+                    <field name="total_source_allocations">
+                        <summary>Number of total successful source allocations for each line</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+
+            <query name="find">
+                <summary>Find and retrieve an order by its id at a given sales channel.</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="id">
+                        <summary>Order id</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="sales_channel_id">
+                        <summary>Sales channel id</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+                <returns>magento.sales.order</returns>
+            </query>
+        </service>
+    </module>
+</specification>

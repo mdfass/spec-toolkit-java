@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+        <service name="warehouse_management">
+            <summary>Warehouse Management</summary>
+
+            <command name="request_shipment">
+                <summary>Initiate shipment request</summary>
+                <description>
+                    Shipment request initiated by Order Management System when its time to ship all or certain lines of
+                    the order
+                </description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="request_id">
+                        <summary>Shipment Request</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="sales_channel">
+                        <summary>Sales Channel where order was placed</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="order_id">
+                        <summary>Order ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="source_id">
+                        <summary>ID of source which will fulfill the request</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="parent_request_id">
+                        <summary>ID of parent shipment request</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="gift_message">
+                        <summary>Gift message</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="shipping_method">
+                        <summary>Shipping method to be used</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="shipping_price">
+                        <summary>Price of the shipping</summary>
+                        <type>magento.common.price</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="shipping_address">
+                        <summary>Shipping address</summary>
+                        <type>magento.common.address</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="billing_address">
+                        <summary>Billing address</summary>
+                        <type>magento.common.address</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="custom_details">
+                        <summary>Custom details</summary>
+                        <type>array[magento.common.custom_attribute]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="items">
+                        <summary>List of items to be shipped</summary>
+                        <type>array[magento.logistics.item]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="aggregated_items">
+                        <summary>Aggregated items</summary>
+                        <type>array[magento.logistics.aggregated_item]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="created">
+                        <summary>Creation Date of the order</summary>
+                        <type>datetime</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="customer_id">
+                        <summary>Customer Id</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="customer_reference">
+                        <summary>Customer reference</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="language">
+                        <summary>Language Code</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="vat_country">
+                        <summary>Country Code</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="request_created_at">
+                        <summary>Creation date of the shipment request</summary>
+                        <type>datetime</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="lines_shipped">
+                <summary>Lines that have been shipped for a shipment requested</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="request_id">
+                        <summary>Request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="packages">
+                        <summary>List of packages with shipped item(s)</summary>
+                        <type>array[magento.logistics.package]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="items">
+                        <summary>List of items</summary>
+                        <type>array[magento.logistics.item]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="lines_declined">
+                <summary>Lines that have been declined for a shipment requested</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="request_id">
+                        <summary>Request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="items">
+                        <summary>List of order_line_number of items that have been declined</summary>
+                        <type>array[integer]</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="aggregated_items">
+                        <summary>List of order_line_number of aggregated items that have been declined</summary>
+                        <type>array[magento.logistics.aggregated_item]</type>
+                        <required>false</required>
+                    </argument>
+                    <argument name="items_collection">
+                        <summary>List of items</summary>
+                        <type>array[magento.logistics.item]</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+    </module>
+</specification>

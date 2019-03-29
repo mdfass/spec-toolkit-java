@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="appeasement_management">
+            <summary>Appeasement Management</summary>
+
+            <command name="create">
+                <summary>Create an appeasement for an order</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="appeasement">
+                        <summary>Create an appeasement</summary>
+                        <type>magento.postsales.appeasement</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+        </service>
+    </module>
+
+</specification>

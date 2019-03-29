@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.postsales">
+
+        <service name="return_management">
+            <summary>Return Management</summary>
+
+            <command name="update">
+                <summary>Update a return for an order</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Update a return</summary>
+                        <type>magento.postsales.return_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="authorize">
+                <summary>Authorize a new return for an order</summary>
+                <extensible>true</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Authorize a new return</summary>
+                        <type>magento.postsales.return_authorize</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="request">
+                <summary>Initiate a return request</summary>
+                <extensible>true</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Initiate a new return</summary>
+                        <type>magento.postsales.return_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="retry_request">
+                <summary>Retry a return request</summary>
+                <extensible>true</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Resend return request communication to the warehouse management system</summary>
+                        <type>magento.postsales.retry_return_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="cancel">
+                <summary>Cancel a return</summary>
+                <extensible>true</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Return to be cancelled</summary>
+                        <type>magento.postsales.return_cancel</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="report_history">
+                <summary>Report the history of the specified return</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="rma">
+                        <summary>RMA of the desired return</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="update_custom_attributes">
+                <summary>Update custom attributes of the specified return</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return_custom_attributes_modification">
+                        <summary>Custom attributes modification</summary>
+                        <type>magento.postsales.return_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="update_line_custom_attributes">
+                <summary>Update custom attributes of the specified return line</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return_line_custom_attributes_modification">
+                        <summary>Line ustom attributes modification</summary>
+                        <type>magento.postsales.return_line_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="custom_attributes_updated">
+                <summary>Custom attributes of the specified return has been updated</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return_custom_attributes_modification">
+                        <summary>Custom attributes modification</summary>
+                        <type>magento.postsales.return_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="line_custom_attributes_updated">
+                <summary>Custom attributes of the specified return line has been updated</summary>
+                <extensible>false</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return_line_custom_attributes_modification">
+                        <summary>Line custom attributes modification</summary>
+                        <type>magento.postsales.return_line_custom_attributes_modification</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="received">
+                <summary>A return has been received (for both blind and regular returns)</summary>
+                <extensible>true</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Return received</summary>
+                        <type>magento.postsales.return_receive</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="updated">
+                <summary>Notify when a return has been updated</summary>
+                <extensible>true</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Notify a return update</summary>
+                        <type>magento.postsales.return_update</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="duplicated">
+                <summary>Notify when a return is duplicated</summary>
+                <extensible>true</extensible>
+                <status>beta</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Notify a return duplication</summary>
+                        <type>magento.postsales.return_duplicate</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="reported">
+                <summary>Notification about a return suitable for reporting purposes</summary>
+                <extensible>false</extensible>
+                <status>deprecated</status>
+                <arguments>
+                    <argument name="return">
+                        <summary>Return</summary>
+                        <type>magento.postsales.return_update</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+        </service>
+
+        <struct name="return_custom_attributes_modification">
+            <summary>Custom attributes modification</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>The sales channel for the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Order identifier</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_line_custom_attributes_modification">
+            <summary>Line custom attributes modification</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>The sales channel for the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Order identifier</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="line_number">
+                    <summary>Return line number</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom Attributes</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_modification">
+            <summary>Represents a return</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Reference to the Source where the items will be returned</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User who authorized the return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_number">
+                    <summary>Carrier Tracking number of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_url">
+                    <summary>URL for Carrier Tracking of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_label_url">
+                    <summary>URL to get the Carrier Tracking label of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_carrier">
+                    <summary>Return tracking carrier name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_authorize">
+            <summary>Represents a return authorization for all product items returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Source where goods will be returned</summary>
+                    <description>
+                        Reference to the source where goods will be returned, if provided.
+                        Otherwise, the source that fulfilled the order will be assigned by default.
+                    </description>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="user">
+                    <summary>User who authorized the return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_number">
+                    <summary>Carrier Tracking number of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_url">
+                    <summary>URL for Carrier Tracking of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_label_url">
+                    <summary>URL to get the Carrier Tracking label of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_carrier">
+                    <summary>Return tracking carrier name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="origin_date">
+                    <summary>Date in which the return was authorized</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of items in the return</summary>
+                    <type>array[magento.postsales.return_line]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_cancel">
+            <summary>Represents a return cancellation</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Reference to the Source where the items were returned</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User who cancels the return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_request">
+            <summary>Represents a return request for all product items to be returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Reference to the Source where the items will be returned</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_number">
+                    <summary>Carrier Tracking number of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_url">
+                    <summary>URL for Carrier Tracking of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_label_url">
+                    <summary>URL to get the Carrier Tracking label of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_carrier">
+                    <summary>Return tracking carrier name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of items in the return</summary>
+                    <type>array[magento.postsales.return_line]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="retry_return_request">
+            <summary>Retry a return request for all product items to be returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="rma">
+                    <summary>RMA code of the return (empty for blind returns)</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_line">
+            <summary>Container of data for product items returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>External identifier of the line in the order. It may not be unique</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="line_number">
+                    <summary>Unique identifier of the line in the order</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="sku">
+                    <summary>Product SKU identifier of the item</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return line level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="condition">
+                    <summary>Condition of the item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="condition_description">
+                    <summary>Description of the condition</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+
+        <struct name="return_receive_line">
+            <summary>Container of data for product items returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>External identifier of the line in the order. It may not be unique</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="line_number">
+                    <summary>Unique identifier of the line in the order</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="sku">
+                    <summary>Product SKU identifier of the item</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return line level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="condition">
+                    <summary>Condition of the item</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="condition_description">
+                    <summary>Description of the condition</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_receive">
+            <summary>A return is received for all product items to be returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Reference to the Source where the items were returned</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User who do the action</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return (empty for blind returns)</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_number">
+                    <summary>Carrier Tracking number of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_url">
+                    <summary>URL for Carrier Tracking of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_label_url">
+                    <summary>URL to get the Carrier Tracking label of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_carrier">
+                    <summary>Return tracking carrier name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="origin_date">
+                    <summary>Date in which the return was received</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of items in the return received</summary>
+                    <type>array[magento.postsales.return_receive_line]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_update_line">
+            <summary>Container of data for product items returned</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="id">
+                    <summary>External identifier of the line in the order. It may not be unique</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="line_number">
+                    <summary>Unique identifier of the line in the order</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="sku">
+                    <summary>Product SKU identifier of the item</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="status">
+                    <summary>Status of the item in the return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return line level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="reason">
+                    <summary>Code of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_description">
+                    <summary>Description of the reason</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="condition">
+                    <summary>Condition of the item</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="condition_description">
+                    <summary>Description of the condition</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_update">
+            <summary>Notify a return update</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Reference to the Source where the order items were sourced</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="user">
+                    <summary>User who updated the return</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_number">
+                    <summary>Carrier Tracking number of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_url">
+                    <summary>URL for Carrier Tracking of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_label_url">
+                    <summary>URL to get the Carrier Tracking label of the Return package</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="return_tracking_carrier">
+                    <summary>Return tracking carrier name</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="custom_attributes">
+                    <summary>Custom attributes at return header level</summary>
+                    <type>array[magento.common.custom_attribute]</type>
+                    <required>false</required>
+                </property>
+                <property name="status">
+                    <summary>Status of the return</summary>
+                    <type>magento.postsales.status</type>
+                    <required>false</required>
+                </property>
+                <property name="lines">
+                    <summary>List of items in the return</summary>
+                    <type>array[magento.postsales.return_update_line]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="return_duplicate">
+            <summary>Notify a return duplication</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="sales_channel_id">
+                    <summary>Reference to the Store where the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Reference to the Order affected</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="rma">
+                    <summary>RMA code of the return authorization</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="status">
+            <summary>Status of the return</summary>
+            <extensible>true</extensible>
+            <properties>
+                <property name="code">
+                    <summary>Code of return</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="name">
+                    <summary>Name of return</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_code">
+                    <summary>Reason code of return</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="reason_name">
+                    <summary>Reason name of return</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="date">
+                    <summary>Creation date of return</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+    </module>
+
+</specification>
