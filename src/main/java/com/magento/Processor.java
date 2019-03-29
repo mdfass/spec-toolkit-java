@@ -164,7 +164,7 @@ public class Processor {
     System.out.println(
         String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
     try {
-      javaFile.writeTo(Paths.get("src/generated/java"));
+      javaFile.writeTo(Paths.get("target/generated-sources/java"));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -194,7 +194,7 @@ public class Processor {
     System.out.println(
         String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
     try {
-      javaFile.writeTo(Paths.get("src/generated/java"));
+      javaFile.writeTo(Paths.get("target/generated-sources/java"));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
