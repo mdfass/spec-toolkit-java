@@ -295,7 +295,7 @@ public class Processor {
       case "integer":
         return Integer.class;
       case "float":
-        return Integer.class;
+        return Float.class;
       default:
         return Void.class;
     }
