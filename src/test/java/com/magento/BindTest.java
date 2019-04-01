@@ -1,5 +1,6 @@
 package com.magento;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -20,6 +21,7 @@ public class BindTest {
     mapper = new ObjectMapper();
     // in spring spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS = false
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.setSerializationInclusion(Include.NON_ABSENT);
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(new Jdk8Module());
   }

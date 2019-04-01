@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 
@@ -124,17 +125,19 @@ public class Processor {
       String description, boolean extensible, List<StructProperty> properties) {
     String typeName = CaseUtils.toCamelCase(structName, true, new char[] {'_'});
 
+    // build fields
     List<FieldSpec> fieldSpecs = new ArrayList<>();
     for (StructProperty property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       fieldSpecs.add(FieldSpec
-          .builder(fromString(property.type), propertyName, Modifier.PUBLIC, Modifier.FINAL)
+          .builder(optionalIfNecessary(property), propertyName, Modifier.PUBLIC, Modifier.FINAL)
           .addAnnotation(AnnotationSpec.builder(JsonProperty.class)
               .addMember("value", "$S", property.originalPropertyName)
               .addMember("required", "$L", property.required).build())
           .addJavadoc(getJavadoc(property.summary, property.description)).build());
     }
 
+    // build constructor parameters
     List<ParameterSpec> parameterSpecs = new ArrayList<>();
     for (StructProperty property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
@@ -148,9 +151,15 @@ public class Processor {
     Builder contructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
         .addParameters(parameterSpecs).addAnnotation(JsonCreator.class);
 
+    // build field initializations in constructor body
     for (StructProperty property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
-      contructorBuilder.addCode("this.$L = $L;\n", propertyName, propertyName);
+      if (property.required) {
+        contructorBuilder.addCode("this.$L = $L;\n", propertyName, propertyName);
+      } else {
+        contructorBuilder.addCode("this.$L = Optional.ofNullable($L);\n", propertyName,
+            propertyName);
+      }
     }
     MethodSpec constructor = contructorBuilder.build();
 
@@ -175,14 +184,19 @@ public class Processor {
     String typeName = CaseUtils.toCamelCase(structName, true, new char[] {'_'});
     com.squareup.javapoet.TypeSpec.Builder enumBuilder =
         TypeSpec.enumBuilder(typeName).addModifiers(Modifier.PUBLIC);
+
+    // enum constants with a string parameter builder of the json value.
     for (String enumValue : enumValues) {
       String enumDeclaration = enumValue.replaceAll("-", "_").toUpperCase();
       enumBuilder.addEnumConstant(enumDeclaration,
           TypeSpec.anonymousClassBuilder("$S", enumValue).build());
     }
+
+    // field to hold the json String value.
     FieldSpec valueSpec = FieldSpec.builder(String.class, "value", Modifier.PRIVATE)
         .addAnnotation(JsonValue.class).build();
 
+    // builder to initialize the value field
     MethodSpec constructorSpec = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
         .addParameter(String.class, "value", Modifier.FINAL).addCode("this.value = value;\n")
         .build();
@@ -216,6 +230,13 @@ public class Processor {
   private Set<String> complexTypes = new HashSet<>();
   private Set<String> aggregateTypes = new HashSet<>();
 
+  private TypeName optionalIfNecessary(StructProperty sp) {
+    TypeName typeName = fromString(sp.type);
+    if (!sp.required) {
+      typeName = ParameterizedTypeName.get(ClassName.get(Optional.class), typeName);
+    }
+    return typeName;
+  }
 
   private TypeName fromString(String type) {
     if (type.contains("[")) {
