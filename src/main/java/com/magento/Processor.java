@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,6 +49,10 @@ public class Processor {
     System.out.println(types);
     System.out.println(aggregateTypes);
     System.out.println(complexTypes);
+    System.out.println(services);
+    System.out.println(commands);
+    System.out.println(events);
+    System.out.println(queries);
   }
 
   private void process(Path p) {
@@ -71,44 +76,108 @@ public class Processor {
       Element moduleElement = it.next();
       readStructs(moduleElement);
       readEnums(moduleElement);
+      readServices(moduleElement);
+    }
+  }
+
+  private Set<String> services = new HashSet<>();
+  private Set<String> queries = new HashSet<>();
+  private Set<String> commands = new HashSet<>();
+  private Set<String> events = new HashSet<>();
+
+  private void readServices(Element moduleElement) throws DocumentException {
+    String moduleName = moduleElement.attribute("name").getValue();
+    for (Iterator<Element> it = moduleElement.elementIterator("service"); it.hasNext();) {
+      Element serviceElement = it.next();
+      String serviceName = serviceElement.attribute("name").getValue();
+      String scopedServiceName = String.format("%s.%s", moduleName, serviceName);
+      services.add(scopedServiceName);
+      readQueries(serviceElement, scopedServiceName);
+      readCommands(serviceElement, scopedServiceName);
+      readEvents(serviceElement, scopedServiceName);
     }
   }
 
 
+
+  private void readEvents(Element serviceElement, String scopedServiceName)
+      throws DocumentException {
+    for (Iterator<Element> it = serviceElement.elementIterator("event"); it.hasNext();) {
+      Element eventElement = it.next();
+      String eventName = eventElement.attribute("name").getValue();
+      List<Property> arguments = readArguments(eventElement.element("arguments"));
+      events.add(String.format("%s.%s(%s)", scopedServiceName, eventName,
+          Arrays.toString(arguments.toArray())));
+    }
+  }
+
+  private void readCommands(Element serviceElement, String scopedServiceName)
+      throws DocumentException {
+    for (Iterator<Element> it = serviceElement.elementIterator("command"); it.hasNext();) {
+      Element commandElement = it.next();
+      String commandName = commandElement.attribute("name").getValue();
+      List<Property> arguments = readArguments(commandElement.element("arguments"));
+      commands.add(String.format("%s.%s(%s)", scopedServiceName, commandName,
+          Arrays.toString(arguments.toArray())));
+    }
+  }
+
+  private void readQueries(Element serviceElement, String scopedServiceName)
+      throws DocumentException {
+    for (Iterator<Element> it = serviceElement.elementIterator("query"); it.hasNext();) {
+      Element queryElement = it.next();
+      String queryName = queryElement.attribute("name").getValue();
+      List<Property> arguments = readArguments(queryElement.element("arguments"));
+      queries.add(String.format("%s.%s(%s)", scopedServiceName, queryName,
+          Arrays.toString(arguments.toArray())));
+    }
+  }
+
   private void readStructs(Element moduleElement) throws DocumentException {
-    String moduleName = "com." + moduleElement.attribute("name").getValue();
+    String packageName = "com." + moduleElement.attribute("name").getValue();
     for (Iterator<Element> it = moduleElement.elementIterator("struct"); it.hasNext();) {
       Element structElement = it.next();
       String structName = structElement.attribute("name").getValue();
       String summary = structElement.elementText("summary");
       String description = structElement.elementText("description");
       boolean extensible = Boolean.valueOf(structElement.elementText("extensible"));
-      List<StructProperty> properties = readProperties(structElement.element("properties"));
-      generateBean(moduleName, structName, summary, description, extensible, properties);
+      List<Property> properties = readProperties(structElement.element("properties"));
+      generateBean(packageName, structName, summary, description, extensible, properties);
     }
   }
 
 
-  private List<StructProperty> readProperties(Element propertiesElement) throws DocumentException {
-    List<StructProperty> sps = new ArrayList<>();
+  private List<Property> readProperties(Element propertiesElement) throws DocumentException {
+    List<Property> sps = new ArrayList<>();
     for (Iterator<Element> it = propertiesElement.elementIterator("property"); it.hasNext();) {
-      Element propertyElement = it.next();
-      String propertyName = propertyElement.attribute("name").getValue();
-      String type = propertyElement.elementText("type");
-      String summary = propertyElement.elementText("summary");
-      String description = propertyElement.elementText("description");
-      boolean required = Boolean.valueOf(propertyElement.elementText("required"));
-      sps.add(new StructProperty(propertyName, type, summary, description, required));
+      sps.add(readProperty(it.next()));
+    }
+    return sps;
+  }
+
+  private Property readProperty(Element propertyElement) {
+    String propertyName = propertyElement.attribute("name").getValue();
+    String type = propertyElement.elementText("type");
+    String summary = propertyElement.elementText("summary");
+    String description = propertyElement.elementText("description");
+    boolean required = Boolean.valueOf(propertyElement.elementText("required"));
+    return new Property(propertyName, type, summary, description, required);
+  }
+
+  private List<Property> readArguments(Element argumentsElement) throws DocumentException {
+    List<Property> sps = new ArrayList<>();
+    for (Iterator<Element> it = argumentsElement.elementIterator("argument"); it.hasNext();) {
+      sps.add(readProperty(it.next()));
     }
     return sps;
   }
 
   private void readEnums(Element moduleElement) throws DocumentException {
-    String moduleName = "com." + moduleElement.attribute("name").getValue();
+    String packageName = "com." + moduleElement.attribute("name").getValue();
     for (Iterator<Element> it = moduleElement.elementIterator("enum"); it.hasNext();) {
       Element enumElement = it.next();
       String enumName = enumElement.attribute("name").getValue();
-      generateEnum(moduleName, enumName, readEnumValues(enumElement));
+      generateEnum(packageName, enumName, readEnumValues(enumElement));
     }
   }
 
@@ -122,12 +191,12 @@ public class Processor {
   }
 
   private void generateBean(String moduleName, String structName, String summary,
-      String description, boolean extensible, List<StructProperty> properties) {
+      String description, boolean extensible, List<Property> properties) {
     String typeName = CaseUtils.toCamelCase(structName, true, new char[] {'_'});
 
     // build fields
     List<FieldSpec> fieldSpecs = new ArrayList<>();
-    for (StructProperty property : properties) {
+    for (Property property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       fieldSpecs.add(FieldSpec
           .builder(optionalIfNecessary(property), propertyName, Modifier.PUBLIC, Modifier.FINAL)
@@ -139,7 +208,7 @@ public class Processor {
 
     // build constructor parameters
     List<ParameterSpec> parameterSpecs = new ArrayList<>();
-    for (StructProperty property : properties) {
+    for (Property property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       parameterSpecs
           .add(ParameterSpec.builder(fromString(property.type), propertyName, Modifier.FINAL)
@@ -152,7 +221,7 @@ public class Processor {
         .addParameters(parameterSpecs).addAnnotation(JsonCreator.class);
 
     // build field initializations in constructor body
-    for (StructProperty property : properties) {
+    for (Property property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       if (property.required) {
         contructorBuilder.addCode("this.$L = $L;\n", propertyName, propertyName);
@@ -230,7 +299,7 @@ public class Processor {
   private Set<String> complexTypes = new HashSet<>();
   private Set<String> aggregateTypes = new HashSet<>();
 
-  private TypeName optionalIfNecessary(StructProperty sp) {
+  private TypeName optionalIfNecessary(Property sp) {
     TypeName typeName = fromString(sp.type);
     if (!sp.required) {
       typeName = ParameterizedTypeName.get(ClassName.get(Optional.class), typeName);

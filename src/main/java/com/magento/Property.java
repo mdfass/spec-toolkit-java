@@ -2,7 +2,7 @@ package com.magento;
 
 import javax.lang.model.SourceVersion;
 
-public class StructProperty {
+public class Property {
   public String propertyName;
   public String originalPropertyName;
   public String type;
@@ -10,7 +10,7 @@ public class StructProperty {
   public String description;
   public Boolean required;
 
-  public StructProperty(String propertyName, String type, String summary, String description,
+  public Property(String propertyName, String type, String summary, String description,
       boolean required) {
     if (!SourceVersion.isName(propertyName)) {
       this.propertyName = propertyName + "_java";
@@ -22,6 +22,11 @@ public class StructProperty {
     this.summary = summary;
     this.description = description;
     this.required = required;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s %s", type, propertyName);
   }
 
 
