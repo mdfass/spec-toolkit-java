@@ -55,7 +55,7 @@
                                     <patternset>
                                         <include name="**/*.xml" />
                                     </patternset>
-                                    <mapper type="regexp" from="^(magento-mcom-shared-services-internal-[A-Z,a-z,0-9]{10})/(.*\.xml)" to="\2" />
+                                    <mapper type="regexp" from="^(magento-mcom-shared-services-internal-[A-Z,a-z,0-9]{40})/(.*\.xml)" to="\2" />
                                 </unzip>
                             </target>
                         </configuration>
