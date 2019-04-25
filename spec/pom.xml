@@ -14,6 +14,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+        <shared-services.version>master</shared-services.version>
+        <shared-services.url>https://api.github.com/repos/magento-mcom/shared-services-internal/zipball/${shared-services.version}?access_token=${env.GITHUB_TOKEN}</shared-services.url>
     </properties>
 
     <build>
@@ -29,7 +31,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://api.github.com/repos/magento-mcom/shared-services-internal/zipball/1.0.3?access_token=03bdae42c59a0209b16cdaafc36f08a619562274</url>
+                            <url>${shared-services.url}</url>
                             <unpack>false</unpack>
                             <skipCache>true</skipCache>
                             <overwrite>true</overwrite>
