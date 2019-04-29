@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="https://magento.com/open-specification"
+               xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.logistics">
+
+        <service name="shipment_request_management">
+            <summary>Shipment request Management</summary>
+
+            <command name="export">
+                <summary>Export shipment request</summary>
+                <description>
+                    Shipment request exported by Order Management System manually when client ask for it
+                </description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="shipment_request_id">
+                        <summary>Shipment request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="start_picking">
+                <summary>Shipment-request start picking</summary>
+                <description>
+                    Marks a shipment-request as started
+                </description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="shipment_request_id">
+                        <summary>Shipment-request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="lines_change_status">
+                <summary>Shipment-request Items change status</summary>
+                <description>
+                    Changes a shipment-request item status
+                </description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="shipment_request_id">
+                        <summary>Shipment-request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="items">
+                        <summary>List of items to change</summary>
+                        <type>array[magento.logistics.item]</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <command name="add_line_comment">
+                <summary>Adds a new comment to a shipment request line</summary>
+                <description>
+                    Adds a new comment to a shipment request line
+                </description>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="shipment_request_id">
+                        <summary>Shipment-request ID</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="shipment_request_line">
+                        <summary>Line number to add comment to</summary>
+                        <type>integer</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="user">
+                        <summary>User name</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                    <argument name="commentary">
+                        <summary>Commentary</summary>
+                        <type>string</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="requested">
+                <summary>Shipment request requested event</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="shipment_request">
+                        <summary>Shipment request created</summary>
+                        <type>magento.logistics.shipment_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <event name="updated">
+                <summary>Shipment request updated event</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="shipment_request">
+                        <summary>Shipment request updated</summary>
+                        <type>magento.logistics.shipment_request</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+        </service>
+
+        <service name="shipment_request_repository">
+            <summary>Shipment request Repository</summary>
+
+            <query name="search">
+                <summary>Searchs shipment-requests by criteria</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.logistics.shipment_request_collection</returns>
+                <searchable_fields>
+                    <field name="id">
+                        <summary>Shipment request ID</summary>
+                    </field>
+                    <field name="order_id">
+                        <summary>Order ID</summary>
+                    </field>
+                    <field name="source_id">
+                        <summary>Source ID</summary>
+                    </field>
+                    <field name="shipping_method">
+                        <summary>Shipping method</summary>
+                    </field>
+                    <field name="status">
+                        <summary>Status</summary>
+                    </field>
+                    <field name="origin_date">
+                        <summary>Origin date</summary>
+                    </field>
+                    <field name="status_date">
+                        <summary>Status date</summary>
+                    </field>
+                    <field name="sales_channel_id">
+                        <summary>Sales Channel Id</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="shipment_request_collection">
+            <summary>Shipment request collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching shipment requests</summary>
+                    <type>array[magento.logistics.shipment_request]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="shipment_request">
+            <summary>Shipment request</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="id">
+                    <summary>ID of shipment request</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="order_id">
+                    <summary>Identifier of the order</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="source_id">
+                    <summary>Identifier of the source</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="customer_id">
+                    <summary>Identifier of the customer</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="store">
+                    <summary>Store from where the order comes from</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="language">
+                    <summary>Language of the order</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="vat_country">
+                    <summary>Country in which the order is paying taxes</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="origin">
+                    <summary>Channel in which the order was placed</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="origin_date">
+                    <summary>Date in which the order was placed</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="created_at">
+                    <summary>Date in which the shipment request was created</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="status">
+                    <summary>Shipment request status</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="items">
+                    <summary>List of items</summary>
+                    <type>array[magento.logistics.item]</type>
+                    <required>true</required>
+                </property>
+                <property name="addresses">
+                    <summary>Associated addresses to the shipment request</summary>
+                    <type>array[magento.common.address]</type>
+                    <required>true</required>
+                </property>
+                <property name="shipping_address">
+                    <summary>Shipping address</summary>
+                    <type>magento.common.address</type>
+                    <required>false</required>
+                </property>
+                <property name="billing_address">
+                    <summary>Billing address</summary>
+                    <type>magento.common.address</type>
+                    <required>false</required>
+                </property>
+                <property name="status_date">
+                    <summary>When the status changed for the shipment request</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <service name="shipment_request_item_comment_repository">
+            <summary>Shipment request item comment repository</summary>
+
+            <query name="search">
+                <summary>Search shipment request item comments by criteria</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.logistics.shipment_request_item_comment_collection</returns>
+            </query>
+        </service>
+
+        <struct name="shipment_request_item_comment_collection">
+            <summary>Shipment request item comment collection</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="offset">
+                    <summary>Search result offset</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="size">
+                    <summary>Max number of entries</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="total">
+                    <summary>Total number of records matching search query</summary>
+                    <type>integer</type>
+                    <required>false</required>
+                </property>
+                <property name="items">
+                    <summary>Matching shipment request item comments</summary>
+                    <type>array[magento.logistics.shipment_request_item_comment]</type>
+                    <required>false</required>
+                </property>
+            </properties>
+        </struct>
+
+        <struct name="shipment_request_item_comment">
+            <summary>Shipment request item comment</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="id">
+                    <summary>ID of comment</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="shipment_request_id">
+                    <summary>Identifier of the shipment request</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="shipment_request_line_number">
+                    <summary>Line number of the item in the shipment request</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="created_at">
+                    <summary>Date in which the shipment request item comment was created</summary>
+                    <type>datetime</type>
+                    <required>false</required>
+                </property>
+                <property name="user">
+                    <summary>User name</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="commentary">
+                    <summary>Comment content</summary>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>
