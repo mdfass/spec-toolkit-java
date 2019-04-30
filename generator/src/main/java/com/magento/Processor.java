@@ -37,8 +37,25 @@ import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 public class Processor {
+  private final String PACKAGE_PREFIX = "com." ;
   private String definitionsPath;
   private String generatedJavaPath;
+
+  protected String getDefinitionsPath() {
+    return definitionsPath;
+  }
+
+  protected void setDefinitionsPath(String definitionsPath) {
+    this.definitionsPath = definitionsPath;
+  }
+
+  protected String getGeneratedJavaPath() {
+    return generatedJavaPath;
+  }
+
+  protected void setGeneratedJavaPath(String generatedJavaPath) {
+    this.generatedJavaPath = generatedJavaPath;
+  }
 
   private Processor(String definitionsPath, String generatedJavaPath) {
     this.definitionsPath = definitionsPath;
@@ -109,12 +126,17 @@ public class Processor {
 
   private void readEvents(Element serviceElement, String scopedServiceName)
       throws DocumentException {
-    for (Iterator<Element> it = serviceElement.elementIterator("event"); it.hasNext();) {
+      String packageName = PACKAGE_PREFIX + serviceElement.attribute("name").getValue();
+
+      for (Iterator<Element> it = serviceElement.elementIterator("event"); it.hasNext();) {
       Element eventElement = it.next();
       String eventName = eventElement.attribute("name").getValue();
+      String summary = eventElement.elementText("summary");
+      String description = eventElement.elementText("description");
+      boolean extensible = Boolean.valueOf(eventElement.elementText("extensible"));
       List<Property> arguments = readArguments(eventElement.element("arguments"));
-      events.add(String.format("%s.%s(%s)", scopedServiceName, eventName,
-          Arrays.toString(arguments.toArray())));
+      generateBean(packageName, eventName, summary, description, extensible, arguments);
+
     }
   }
 
@@ -141,7 +163,7 @@ public class Processor {
   }
 
   private void readStructs(Element moduleElement) throws DocumentException {
-    String packageName = "com." + moduleElement.attribute("name").getValue();
+    String packageName = PACKAGE_PREFIX + moduleElement.attribute("name").getValue();
     for (Iterator<Element> it = moduleElement.elementIterator("struct"); it.hasNext();) {
       Element structElement = it.next();
       String structName = structElement.attribute("name").getValue();
