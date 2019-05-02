@@ -7,7 +7,6 @@ import com.magento.spec.model.Property;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterSpec;
@@ -15,9 +14,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.text.CaseUtils;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -29,12 +26,10 @@ import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 
-public class BeanGenerator {
-  private String generatedJavaPath;
-
+public class BeanGenerator extends TypeGenerator {
 
   public BeanGenerator(String generatedJavaPath) {
-    this.generatedJavaPath = generatedJavaPath;
+    super(generatedJavaPath);
   }
 
   public void generateBean(BeanType bt) {
@@ -85,20 +80,11 @@ public class BeanGenerator {
     MethodSpec constructor = contructorBuilder.build();
 
     // TODO if extensible do not add FINAL
-    TypeSpec type = TypeSpec.classBuilder(typeName).addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addFields(fieldSpecs).addMethod(constructor).addJavadoc(getJavadoc(summary, description))
-        .build();
+    TypeSpec typeSpec = TypeSpec.classBuilder(typeName)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addFields(fieldSpecs).addMethod(constructor)
+        .addJavadoc(getJavadoc(summary, description)).build();
 
-    JavaFile javaFile = JavaFile.builder(moduleName, type).build();
-
-    System.out.println(
-        String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
-    try {
-      javaFile.writeTo(Paths.get(generatedJavaPath));
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    writeType(moduleName, typeSpec);
   }
 
   private TypeName optionalIfNecessary(Property sp) {

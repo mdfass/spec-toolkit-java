@@ -32,14 +32,6 @@ public class Processor {
   public void process() throws IOException {
     Files.walk(Paths.get(definitionsPath)).filter(f -> f.toString().endsWith(".xml"))
         .forEach(f -> process(f));
-
-    // System.out.println(types);
-    // System.out.println(aggregateTypes);
-    // System.out.println(complexTypes);
-    // System.out.println(services);
-    // System.out.println(commands);
-    // System.out.println(events);
-    // System.out.println(queries);
   }
 
   private void process(Path p) {

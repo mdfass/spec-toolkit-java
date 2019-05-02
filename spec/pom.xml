@@ -21,6 +21,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.4.1</version>
@@ -55,7 +68,9 @@
                                     <patternset>
                                         <include name="**/*.xml" />
                                     </patternset>
-                                    <mapper type="regexp" from="^(magento-mcom-shared-services-internal-[A-Z,a-z,0-9]{40})/(.*\.xml)" to="\2" />
+                                    <mapper type="regexp"
+                                        from="^(magento-mcom-shared-services-internal-[A-Z,a-z,0-9]{40})/(.*\.xml)"
+                                        to="\2" />
                                 </unzip>
                             </target>
                         </configuration>
