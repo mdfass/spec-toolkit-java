@@ -1,4 +1,4 @@
-package com.magento;
+package com.magento.spec.model;
 
 import javax.lang.model.SourceVersion;
 
@@ -28,7 +28,5 @@ public class Property {
   public String toString() {
     return String.format("%s %s", type, propertyName);
   }
-
-
 
 }
