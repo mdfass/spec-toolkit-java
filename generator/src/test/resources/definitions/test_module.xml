@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://magento.com/open-specification"
+    xsi:schemaLocation="https://magento.com/open-specification ../specification.xsd">
+
+    <module name="magento.codegen.test">
+
+        <service name="test_service">
+            <summary>Test Service</summary>
+
+            <command name="test_command">
+                <summary>Test Command</summary>
+                <description>A command for testing</description>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="test_struct">
+                        <summary>test struct</summary>
+                        <type>magento.codegen.test.test_struct</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </command>
+
+            <event name="test_event">
+                <summary>Test Event</summary>
+                <extensible>false</extensible>
+                <status>draft</status>
+                <arguments>
+                    <argument name="test_struct">
+                        <summary>test struct</summary>
+                        <type>magento.codegen.test.test_struct</type>
+                        <required>true</required>
+                    </argument>
+                </arguments>
+            </event>
+
+            <query name="test_search">
+                <summary>Test Search</summary>
+                <extensible>false</extensible>
+                <status>public</status>
+                <arguments>
+                    <argument name="query">
+                        <summary>Query</summary>
+                        <type>magento.common.query</type>
+                        <required>false</required>
+                    </argument>
+                </arguments>
+                <returns>magento.codegen.test.test_struct</returns>
+                <searchable_fields>
+                    <field name="test_string">
+                        <summary>Test string</summary>
+                    </field>
+                </searchable_fields>
+            </query>
+        </service>
+
+        <struct name="test_struct">
+            <summary>Test Struct</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="string_property">
+                    <description>A property of type String</description>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="optional_string_property">
+                    <summary>An optional property of type String</summary>
+                    <type>string</type>
+                    <required>false</required>
+                </property>
+                <property name="date_property">
+                    <summary>A property of type Date</summary>
+                    <type>date</type>
+                    <required>true</required>
+                </property>
+                <property name="datetime_property">
+                    <summary>A property of type DateTime</summary>
+                    <type>datetime</type>
+                    <required>true</required>
+                </property>
+                <property name="boolean_property">
+                    <summary>A property of type Boolean</summary>
+                    <type>boolean</type>
+                    <required>true</required>
+                </property>
+                <property name="integer_property">
+                    <summary>A property of type Integer</summary>
+                    <type>integer</type>
+                    <required>true</required>
+                </property>
+                <property name="float_property">
+                    <summary>A property of type Float</summary>
+                    <type>float</type>
+                    <required>true</required>
+                </property>
+                <property name="complex_property">
+                    <summary>A property of nested collections of a complex type</summary>
+                    <type>array[map[magento.codegen.test.complex_type]]</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+
+        <enum name="test_enum">
+            <value>test_value_1</value>
+            <value>test-value-2</value>
+            <value>public_test.value-3</value>
+        </enum>
+
+        <struct name="complex_type">
+            <summary>Test complex type</summary>
+            <extensible>false</extensible>
+            <properties>
+                <property name="class">
+                    <summary>A property with a java reserved word name.</summary>
+                    <description>Test Description</description>
+                    <type>string</type>
+                    <required>true</required>
+                </property>
+                <property name="test_enum">
+                    <summary>Enum property</summary>
+                    <type>magento.codegen.test.test_enum</type>
+                    <required>true</required>
+                </property>
+            </properties>
+        </struct>
+    </module>
+</specification>

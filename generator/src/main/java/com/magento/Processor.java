@@ -40,9 +40,8 @@ public class Processor {
       sp.readModules(parse(p).getRootElement());
       sp.getBeans().forEach(bt -> bg.generateBean(bt));
       sp.getEnums().forEach(et -> eg.generateEnum(et));
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (DocumentException de) {
+      throw new IllegalStateException("Error parsing definitions", de);
     }
   }
 

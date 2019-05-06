@@ -20,9 +20,8 @@ public abstract class TypeGenerator {
         String.format("****** %s.%s ******", javaFile.packageName, javaFile.typeSpec.name));
     try {
       javaFile.writeTo(Paths.get(generatedJavaPath));
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (IOException ioe) {
+      throw new IllegalStateException("Cannot write generated type", ioe);
     }
   }
 }

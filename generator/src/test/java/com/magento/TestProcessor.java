@@ -15,11 +15,24 @@ public class TestProcessor {
   public void testEventParse(@TempDir File tempFolder) throws IOException {
     Processor.main(new String[] {"src/test/resources/definitions", tempFolder.getAbsolutePath()});
 
-    String[] events = new String[] {"CustomerShipmentDone.java", "LinePriceAdjusted.java",
-        "LinesReceived.java", "LinesShipped.java", "Reported.java"};
+    String[] events = new String[] {"TestStruct.java", "ComplexType.java", "TestEnum.java"};
 
     Arrays.stream(events).forEach(e -> Assertions.assertTrue(
-        Files.exists(Paths.get(tempFolder.getAbsolutePath(), "com/fulfillment_management", e))));
+        Files.exists(Paths.get(tempFolder.getAbsolutePath(), "com/magento/codegen/test", e))));
+  }
+
+  @Test
+  public void cannotWriteTest(@TempDir File tempFolder) throws IOException {
+    tempFolder.setWritable(false);
+    Assertions.assertThrows(IllegalStateException.class, () -> Processor
+        .main(new String[] {"src/test/resources/definitions", tempFolder.getAbsolutePath()}));
+  }
+
+  @Test
+  public void cannotParseDefinitions(@TempDir File tempFolder) throws IOException {
+    tempFolder.setWritable(false);
+    Assertions.assertThrows(IllegalStateException.class, () -> Processor
+        .main(new String[] {"src/test/resources/bad_definitions", tempFolder.getAbsolutePath()}));
   }
 
 }

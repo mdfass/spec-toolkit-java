@@ -18,7 +18,6 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +148,8 @@ public class BeanGenerator extends TypeGenerator {
       case "map":
         return ClassName.get(Map.class);
       default:
-        return ClassName.get(Collection.class);
+        throw new IllegalStateException(
+            "The collection type " + type + " is not supported by spec.");
     }
   }
 
@@ -173,7 +173,8 @@ public class BeanGenerator extends TypeGenerator {
       case "float":
         return Float.class;
       default:
-        return Void.class;
+        throw new IllegalStateException(
+            "The primitive type " + type + " is not supported by spec.");
     }
   }
 }
