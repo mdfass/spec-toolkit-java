@@ -13,7 +13,5 @@
         <module>generator</module>
         <module>spec</module>
     </modules>
-    <properties>
-    <github.token>9eabe6610b291e158ad21cf3c6eced7fea24e6f5</github.token>
-    </properties>
+
 </project>
