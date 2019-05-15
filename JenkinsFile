@@ -1,0 +1,110 @@
+#!/usr/bin/env groovy
+
+@Library('magento-saas-pipeline') _
+
+/**
+ * This is a basic default Jenkins pipeline which will perform all of the following:
+ *    - Build and unit test on all non-deployment related commits.
+ *    - Push a docker image for the application on successful builds.
+ *    - Push a helm chart for deploying the application to Kubernetes on successful builds.
+ *
+ * Here are some recommendations and options before using this in production:
+ *
+ *    - Add web-hooks to automate release on all commits to master.
+ *    - Add automated testing on pull requests.
+ *    - To protect against releasing or deploying from any branch except master do one of the following:
+ *      - Configure the Jenkins job to build only on the master branch.
+ *      - Add branch checking conditions where appropriate and use a multi-branch pipeline or similar solution to detect
+ *        the branch being utilized.
+ */
+
+def build = [ version: '0', artifactId: '' ]
+
+pipeline {
+    agent {
+        label 'dockerized'
+    }
+
+    parameters {
+        string(name: 'ADOBE_CORP_ARTIFACTORY_CREDENTIALS', defaultValue: 'replace-with-corp-artifactory-credentials-id', description: 'Credentials ID for deploying to Corporate Artifactory')
+        string(name: 'GITHUB_CREDENTIALS', defaultValue: 'replace-with-github-credentials-id', description: 'Credentials ID for tagging repo in Git')
+        booleanParam(name: 'RELEASE', defaultValue: true, description: 'Perform a release after build')
+    }
+
+    environment {
+        GROUP = 'my-group'
+        MAVEN_SNAPSHOT_REPO = "maven-${GROUP}-snapshot-local"
+        MAVEN_RELEASE_REPO = "maven-${GROUP}-release-local"
+        ADOBE_CORP_ARTIFACTORY_SERVER_URL = 'https://artifactory.corp.adobe.com/artifactory'
+    }
+
+    stages {
+        stage ('Prepare for release') {
+            when {
+                expression { params.RELEASE }
+            }
+            steps {
+                script {
+                    def pom = readMavenPom(file: 'pom.xml')
+                    build.artifactId = pom.artifactId
+                    build.version = pom.version.replace("-SNAPSHOT", ".${currentBuild.number}")
+                    echo "Will release as version ${build.version}"
+
+                    def descriptor = Artifactory.mavenDescriptor()
+                    descriptor.version = build.version
+                    descriptor.pomFile = 'pom.xml'
+                    descriptor.transform()
+                }
+            }
+        }
+
+        stage ('Build and deploy application') {
+            when {
+                expression { build.perform }
+            }
+
+            }
+            environment {
+                MAVEN_HOME = '/opt/apache-maven-3.6.0'
+                JAVA_HOME = '/usr/lib/jvm/jdk-11.0.2'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: params.ADOBE_CORP_ARTIFACTORY_CREDENTIALS, passwordVariable: 'ARTIFACTORY_API_TOKEN', usernameVariable: 'ARTIFACTORY_USER')]) {
+                    script {
+                        def server = Artifactory.newServer url: env.ADOBE_CORP_ARTIFACTORY_SERVER_URL, credentialsId: params.ADOBE_CORP_ARTIFACTORY_CREDENTIALS
+
+                        def rtMaven = Artifactory.newMavenBuild()
+                        def buildInfo = Artifactory.newBuildInfo()
+                        buildInfo.env.capture = true
+
+                        rtMaven.opts = '-Xms1024m'
+                        rtMaven.deployer releaseRepo: env.MAVEN_RELEASE_REPO, snapshotRepo: env.MAVEN_SNAPSHOT_REPO, server: server
+                        rtMaven.deployer.deployArtifacts = params.RELEASE
+                        rtMaven.run pom: 'pom.xml', goals: 'clean deploy', buildInfo: buildInfo
+
+                        server.publishBuildInfo buildInfo
+                    }
+                }
+            }
+        }
+
+        stage ('Tag release') {
+            when {
+                expression { params.RELEASE }
+            }
+            environment {
+                TAG = "${build.artifactId}-${build.version}"
+            }
+            steps {
+                withGitSsh(params.GITHUB_CREDENTIALS) {
+                    sh "git tag ${TAG} ${GIT_COMMIT}"
+                    sh "git push origin ${TAG}"
+                }
+            }
+        }
+
+
+
+
+    }
+}
