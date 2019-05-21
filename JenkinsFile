@@ -32,10 +32,12 @@ pipeline {
     }
 
     environment {
-        GROUP = 'my-group'
-        MAVEN_SNAPSHOT_REPO = "maven-${GROUP}-snapshot-local"
-        MAVEN_RELEASE_REPO = "maven-${GROUP}-release-local"
+        GROUP = 'mcom-common'
+        MAVEN_SNAPSHOT_REPO = "maven-${GROUP}-snapshot"
+        MAVEN_RELEASE_REPO = "maven-${GROUP}-release"
         ADOBE_CORP_ARTIFACTORY_SERVER_URL = 'https://artifactory.corp.adobe.com/artifactory'
+        ARTIFACTORY_CREDS='fassiott'
+
     }
 
     stages {
