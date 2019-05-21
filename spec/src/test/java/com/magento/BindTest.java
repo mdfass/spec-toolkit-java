@@ -1,11 +1,14 @@
 package com.magento;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.magento.logistics.ShipmentRequest;
+import com.magento.logistics.shipment_request_management.Updated;
 import com.magento.service_bus.Message;
 import com.magento.service_bus.MessageStatus;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +41,20 @@ public class BindTest {
   }
 
   @Test
+  public void bind2_() throws Exception {
+
+    JsonNode jn = mapper.readValue(new File("src/test/resources/sr.json"), JsonNode.class);
+
+    ObjectNode node = mapper.createObjectNode();
+    node.set("shipment_request", jn);
+    Updated u = mapper.treeToValue(node, Updated.class);
+    System.out.println(mapper.writeValueAsString(u));
+    Assertions.assertEquals("SALES-ISPU-MT-2019-03-27T16:31:26Z-01", u.shipmentRequest.id);
+    Assertions.assertEquals(2, u.shipmentRequest.addresses.size());
+    Assertions.assertEquals(5, u.shipmentRequest.items.size());
+  }
+
+  @Test
   public void bind2() throws Exception {
 
     ShipmentRequest sr =
@@ -52,7 +69,7 @@ public class BindTest {
   public void bind3() throws Exception {
     Message m = new Message("deliveryid", "receivedAt", "endpoint", "method", "params",
         MessageStatus.DELIVERING, "host", "clientIp");
-
-    System.out.println(mapper.writeValueAsString(m));
+    String output = mapper.writeValueAsString(m);
+    Assertions.assertTrue(output.contains("\"status\":\"delivering\""));
   }
 }

@@ -32,12 +32,18 @@ public class BeanGenerator extends TypeGenerator {
   }
 
   public void generateBean(BeanType bt) {
-    generateBean(bt.moduleName, bt.structName, bt.summary, bt.description, bt.extensible,
-        bt.properties);
+    generateType(ClassName.get("java.lang", "Object"), bt.moduleName, bt.structName, bt.summary,
+        bt.description, bt.extensible, bt.properties, Optional.empty());
   }
 
-  private void generateBean(String moduleName, String structName, String summary,
-      String description, boolean extensible, List<Property> properties) {
+  public void generateEvent(BeanType bt) {
+    generateType(ClassName.get("com.magento.spec", "Event"), bt.moduleName, bt.structName,
+        bt.summary, bt.description, bt.extensible, bt.properties, bt.status);
+  }
+
+  private void generateType(ClassName superClass, String moduleName, String structName,
+      String summary, String description, boolean extensible, List<Property> properties,
+      Optional<String> status) {
     String typeName = CaseUtils.toCamelCase(structName, true, new char[] {'_'});
 
     // build fields
@@ -52,6 +58,13 @@ public class BeanGenerator extends TypeGenerator {
           .addJavadoc(getJavadoc(property.summary, property.description)).build());
     }
 
+    if (status.isPresent()) {
+      fieldSpecs.add(FieldSpec
+          .builder(ClassName.get("com.magento.spec", "StatusType"), "eventStatus", Modifier.PRIVATE,
+              Modifier.STATIC, Modifier.FINAL)
+          .initializer("StatusType.get(\"$L\")", status.get()).build());
+    }
+
     // build constructor parameters
     List<ParameterSpec> parameterSpecs = new ArrayList<>();
     for (Property property : properties) {
@@ -63,27 +76,35 @@ public class BeanGenerator extends TypeGenerator {
                   .addMember("required", "$L", property.required).build())
               .build());
     }
-    Builder contructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
+
+    Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
         .addParameters(parameterSpecs).addAnnotation(JsonCreator.class);
+
 
     // build field initializations in constructor body
     for (Property property : properties) {
       String propertyName = CaseUtils.toCamelCase(property.propertyName, false, new char[] {'_'});
       if (property.required) {
-        contructorBuilder.addCode("this.$L = $L;\n", propertyName, propertyName);
+        constructorBuilder.addCode("this.$L = $L;\n", propertyName, propertyName);
       } else {
-        contructorBuilder.addCode("this.$L = Optional.ofNullable($L);\n", propertyName,
+        constructorBuilder.addCode("this.$L = Optional.ofNullable($L);\n", propertyName,
             propertyName);
       }
     }
-    MethodSpec constructor = contructorBuilder.build();
+    MethodSpec constructor = constructorBuilder.build();
 
     // TODO if extensible do not add FINAL
-    TypeSpec typeSpec = TypeSpec.classBuilder(typeName)
+    TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(typeName).superclass(superClass)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addFields(fieldSpecs).addMethod(constructor)
-        .addJavadoc(getJavadoc(summary, description)).build();
+        .addJavadoc(getJavadoc(summary, description));
 
-    writeType(moduleName, typeSpec);
+    if (status.isPresent()) {
+      typeSpecBuilder.addMethod(MethodSpec.methodBuilder("getStatus").addModifiers(Modifier.PUBLIC)
+          .returns(ClassName.get("com.magento.spec", "StatusType")).addCode("return eventStatus;\n")
+          .build());
+    }
+
+    writeType(moduleName, typeSpecBuilder.build());
   }
 
   private TypeName optionalIfNecessary(Property sp) {

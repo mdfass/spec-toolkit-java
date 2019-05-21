@@ -7,9 +7,11 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SpecParser {
@@ -32,7 +34,7 @@ public class SpecParser {
   private Set<String> services = new HashSet<>();
   private Set<String> queries = new HashSet<>();
   private Set<String> commands = new HashSet<>();
-  private Set<String> events = new HashSet<>();
+  private Map<String, BeanType> events = new HashMap<>();
 
   private void readServices(Element moduleElement) throws DocumentException {
     String moduleName = moduleElement.attribute("name").getValue();
@@ -43,14 +45,12 @@ public class SpecParser {
       services.add(scopedServiceName);
       readQueries(serviceElement, scopedServiceName);
       readCommands(serviceElement, scopedServiceName);
-      readEvents(serviceElement, scopedServiceName);
+      readEvents(serviceElement, moduleName);
     }
   }
 
-  private void readEvents(Element serviceElement, String scopedServiceName)
-      throws DocumentException {
-    String packageName = PACKAGE_PREFIX + serviceElement.attribute("name").getValue();
-
+  private void readEvents(Element serviceElement, String moduleName) throws DocumentException {
+    String serviceFullName = moduleName + '.' + serviceElement.attribute("name").getValue();
     for (Iterator<Element> it = serviceElement.elementIterator("event"); it.hasNext();) {
       Element eventElement = it.next();
       String eventName = eventElement.attribute("name").getValue();
@@ -58,8 +58,11 @@ public class SpecParser {
       String description = eventElement.elementText("description");
       boolean extensible = Boolean.valueOf(eventElement.elementText("extensible"));
       List<Property> arguments = readArguments(eventElement.element("arguments"));
-      beans.add(new BeanType(packageName, eventName, summary, description, extensible, arguments));
+      String eventStatus = eventElement.elementText("status");
 
+      BeanType event = new BeanType(PACKAGE_PREFIX + serviceFullName, eventName, summary,
+          description, extensible, arguments, eventStatus);
+      events.put(serviceFullName + '.' + eventName, event);
     }
   }
 
@@ -149,5 +152,9 @@ public class SpecParser {
 
   public List<EnumType> getEnums() {
     return enums;
+  }
+
+  public Map<String, BeanType> getEvents() {
+    return events;
   }
 }

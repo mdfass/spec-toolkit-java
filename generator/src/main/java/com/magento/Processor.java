@@ -3,6 +3,7 @@ package com.magento;
 import com.magento.spec.generator.BeanGenerator;
 import com.magento.spec.generator.EnumGenerator;
 import com.magento.spec.parser.SpecParser;
+import org.apache.commons.text.CaseUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
@@ -39,6 +40,10 @@ public class Processor {
       SpecParser sp = new SpecParser();
       sp.readModules(parse(p).getRootElement());
       sp.getBeans().forEach(bt -> bg.generateBean(bt));
+      sp.getEvents().entrySet()
+          .forEach(e -> System.out.printf("%s, com.%s.%s\n", e.getKey(), e.getValue().moduleName,
+              CaseUtils.toCamelCase(e.getValue().structName, true, new char[] {'_'})));
+      sp.getEvents().values().forEach(bt -> bg.generateEvent(bt));
       sp.getEnums().forEach(et -> eg.generateEnum(et));
     } catch (DocumentException de) {
       throw new IllegalStateException("Error parsing definitions", de);
