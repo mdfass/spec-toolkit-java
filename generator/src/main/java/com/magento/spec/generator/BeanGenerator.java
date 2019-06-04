@@ -4,27 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.magento.spec.model.BeanType;
 import com.magento.spec.model.Property;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.*;
 import com.squareup.javapoet.MethodSpec.Builder;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.text.CaseUtils;
+
+import javax.lang.model.element.Modifier;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javax.lang.model.element.Modifier;
-
+import java.util.*;
 public class BeanGenerator extends TypeGenerator {
 
   public BeanGenerator(String generatedJavaPath) {
@@ -95,8 +87,9 @@ public class BeanGenerator extends TypeGenerator {
 
     // TODO if extensible do not add FINAL
     TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(typeName).superclass(superClass)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addFields(fieldSpecs).addMethod(constructor)
-        .addJavadoc(getJavadoc(summary, description));
+            .addAnnotation(EqualsAndHashCode.class).addAnnotation(Setter.class).addAnnotation(ToString.class).addAnnotation(Getter.class)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addFields(fieldSpecs).addMethod(constructor)
+            .addJavadoc(getJavadoc(summary, description));
 
     if (status.isPresent()) {
       typeSpecBuilder.addMethod(MethodSpec.methodBuilder("getStatus").addModifiers(Modifier.PUBLIC)
