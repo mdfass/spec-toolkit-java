@@ -3,21 +3,19 @@ package com.magento;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.*;
 import com.squareup.javapoet.MethodSpec.Builder;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.text.CaseUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
+import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -25,17 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javax.lang.model.element.Modifier;
-
+import java.util.*;
 public class Processor {
   private final String PACKAGE_PREFIX = "com." ;
   private String definitionsPath;
@@ -262,7 +250,7 @@ public class Processor {
     MethodSpec constructor = contructorBuilder.build();
 
     // TODO if extensible do not add FINAL
-    TypeSpec type = TypeSpec.classBuilder(typeName).addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+    TypeSpec type = TypeSpec.classBuilder(typeName).addAnnotation(EqualsAndHashCode.class).addAnnotation(Setter.class).addAnnotation(ToString.class).addAnnotation(Getter.class).addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addFields(fieldSpecs).addMethod(constructor).addJavadoc(getJavadoc(summary, description))
         .build();
 
